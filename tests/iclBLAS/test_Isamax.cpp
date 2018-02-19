@@ -1,0 +1,113 @@
+// Copyright (c) 2017-2018 Intel Corporation
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//      http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <gtest/gtest.h>
+#include <iclBLAS.h>
+
+TEST(Isamax, inc_1)
+{
+    const int n = 11;
+    const int incx = 1;
+
+    float x[n * incx] = { -1.f, 23.f, 3.f, 14.f, 4.f, 8.f, 7.f, -11.f, 9.f, 10.f, 14.f };
+    
+    int zeroValue = 0;
+    int *res = &zeroValue;
+    int ref = 1;
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasIsamax(handle, n, x, incx, res);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_EQ(ref, *res);
+}
+
+TEST(Isamax, inc2)
+{
+    const int n = 1000;
+    const int incx = 2;
+
+    float x[n * incx];
+
+    for (int i = 0; i < n * incx; ++i)
+    {
+        x[i] = static_cast<float>(i);
+    }
+
+    int result[1] = { 0 };
+
+    x[66] = 3000;
+    x[67] = 3000;
+    x[68] = 3000;
+    int ex_res = 66;
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasIsamax(handle, n, x, incx, result);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_EQ(ex_res, *result);
+}
+
+TEST(Isamax, opt1_test)
+{
+    const int n = 1024;
+    const int incx = 1;
+
+    float x[n * incx];
+
+    for (int i = 0; i < n; ++i)
+    {
+        x[i] = static_cast<float>(i)/n/n;
+    }
+
+    x[55] = -22222.f;
+    x[56] = -22222.f;
+    x[58] = -22222.f;
+    x[111] = -22222.f;
+    x[222] = -22222.f;
+
+    int result[1] = { 0 };
+    int ref = 55;
+
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasIsamax(handle, n, x, incx, result);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_EQ(ref, *result);
+}
