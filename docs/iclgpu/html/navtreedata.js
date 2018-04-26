@@ -1,6 +1,6 @@
 var NAVTREE =
 [
-  [ "iclGPU", "index.html", [
+  [ "Intel clGPU", "index.html", [
     [ "Intel Compute Library for GPU Core library", "index.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [

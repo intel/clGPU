@@ -5,28 +5,31 @@
 
 ## Introduction
 
-*Intel&reg; Compute Libraries for GPU* (**iclGPU**) is a framework and repository for implementation of compute libraries (e.g. BLAS) accelerated using Intel&reg; Processor Graphics.
+*Intel&reg; Compute Libraries for GPU* (**Intel&reg; clGPU**) is a framework and repository for implementation of compute libraries (e.g. BLAS) accelerated using Intel&reg; Processor Graphics.
 It provides ability to develop efficient and optimized kernels for Intel GPU and mechanism of their execution.
 
-This technical preview includes **iclBLAS** - Basic Linear Algebra Subprograms (BLAS) implementation optimized for Intel&reg; GPU.
+This technical preview includes **Intel&reg; clBLAS** - Basic Linear Algebra Subprograms (BLAS) implementation optimized for Intel&reg; GPU.
 
 As with any technical preview, APIs may change in future updates.
 
 ## License
 
-iclGPU is licensed under
+Intel&reg; clGPU is licensed under
 [Apache License Version 2.0](LICENSE).
 
 ### Attached licenses
 
-iclGPU uses 3<sup>rd</sup>-party components licensed under following licenses:
+iclGPU uses 3rd-party components licensed under following licenses:
+
 - *googletest* under [Google\* License](https://github.com/google/googletest/blob/master/googletest/LICENSE)
 - *OpenCL&trade; ICD and C++ Wrapper* under [Khronos&trade; License](https://github.com/KhronosGroup/OpenCL-CLHPP/blob/master/LICENSE.txt)
 
 ## Documentation
+
 There is online documentation available:
-- [iclGPU core library API](docs/iclgpu/html/index.html)
-- [iclBLAS API](docs/iclBLAS/html/index.html)
+
+- [Intel&reg; clGPU core library API](docs/iclgpu/html/index.html)
+- [Intel&reg; clBLAS API](docs/iclBLAS/html/index.html)
 
 ---
 

@@ -1,7 +1,7 @@
 var NAVTREE =
 [
-  [ "iclBLAS", "index.html", [
-    [ "Intel® Compute Libraries for GPU BLAS library (iclBLAS)", "index.html", null ],
+  [ "Intel clBLAS", "index.html", [
+    [ "Intel® Compute Libraries for GPU BLAS library (Intel® clBLAS)", "index.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],

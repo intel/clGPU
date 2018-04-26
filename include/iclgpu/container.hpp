@@ -15,6 +15,8 @@
 #pragma once
 #include <memory>
 #include <unordered_map>
+#include <exception>
+#include <typeindex>
 
 namespace iclgpu
 {
@@ -27,6 +29,7 @@ class container
 {
     class element_base {};
     using element_id_t = char;
+    using element_key = std::type_index;
 
 public:
     /// @brief Context holder base class
@@ -60,9 +63,6 @@ public:
         std::shared_ptr<C> context() const { return _context.lock(); }
     private:
         std::weak_ptr<C> _context;
-        friend class container;
-        static element_id_t* id() { return &_id; }
-        static element_id_t  _id;
 
     public:
                     element(const element&   other) = delete;
@@ -77,14 +77,14 @@ public:
     typename std::enable_if<std::is_base_of<element_base, T>::value, std::shared_ptr<T>>::type
     get(Args&&...args)
     {
-        auto key = T::id();
+        element_key key(typeid(T));
         auto it  = _elements.find(key);
         if (it != _elements.end())
         {
             return std::static_pointer_cast<T>(it->second);
         }
-        auto result = std::make_shared<T>(static_cast<C*>(this)->shared_from_this(), std::forward<Args>(args)...);
-        _elements.insert(make_pair(key, result));
+        auto result = instantiate<T>(std::forward<Args>(args)...);
+        _elements.insert(std::make_pair(key, result));
         return result;
     }
 
@@ -93,15 +93,26 @@ public:
     typename std::enable_if<std::is_base_of<holder, T>::value, std::shared_ptr<T>>::type
     get(Args&&...args)
     {
-        return std::make_shared<T>(static_cast<C*>(this)->shared_from_this(), std::forward<Args>(args)...);
+        return instantiate<T>(std::forward<Args>(args)...);
     }
 
 private:
-    std::unordered_map<element_id_t*, std::shared_ptr<element_base>> _elements;
+    std::unordered_map<element_key, std::shared_ptr<element_base>> _elements;
+
+    template<class T, class... Args>
+    std::enable_if_t<std::is_constructible<T, std::shared_ptr<C>, Args&&...>::value, std::shared_ptr<T>>
+    instantiate(Args&&...args)
+    {
+        return std::make_shared<T>(static_cast<C*>(this)->shared_from_this(), std::forward<Args>(args)...);
+    }
+
+    template<class T, class... Args>
+    std::enable_if_t<!std::is_constructible<T, std::shared_ptr<C>, Args&&...>::value, std::shared_ptr<T>>
+    instantiate(Args&&...args)
+    {
+        throw std::logic_error("Cannot instantiate class.");
+    }
 };
 
 /// @}
 } // namespace iclgpu
-
-/// @brief Define element class id
-#define DEFINE_CLASS_ID(T) template<> template<> iclgpu::container<T::container_type>::element_id_t T::container_type::element<T>::_id = 0;

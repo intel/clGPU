@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2018 Intel Corporation
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,15 @@
 #   endif
 #endif
 
+#if defined(_MSC_VER) || defined(__INTEL_COMPILER) || defined(__ICC)
+#   define ICLBLAS_ALWAYS_INLINE __forceinline
+#elif defined(__GNUC__) || defined(__clang__)
+#   define ICLBLAS_ALWAYS_INLINE __attribute__((always_inline))
+#else
+#   define ICLBLAS_ALWAYS_INLINE
+#   pragma message ("warning Unknown always-inline function attribute.")
+#endif
+
 /*****************************************************************************/
 
 /*!
@@ -48,10 +57,10 @@
  * @brief This file contains all of the BLAS related (public) interfaces and objects.
  */
 
-/* 
+/*
  * or more obtusely but canonical reference here: http://www.netlib.org/blas/
  * Inside Tensorflow is another view of blas.h https://github.com/tensorflow/tensorflow/blob/master/tensorflow/stream_executor/blas.h
- * 
+ *
  * OCL BLAS better name than genBLAS because this interface should work for all opencl implementations (though some kernels may not be available
  * if they use special gen extensions like subgroups
 */
@@ -59,10 +68,23 @@
 /*!
  * @brief Complex type definition
  */
-typedef struct _oclComplex_t
-{
-    float val[2]; /*!< real (val[0]) and imaginary (val[1]) parts of complex number */
-} oclComplex_t;
+#ifdef __cplusplus
+#   include <complex>
+    typedef std::complex<float> oclComplex_t;
+    inline float Creal(const oclComplex_t& a)       { return a.real(); }
+    inline float Cimag(const oclComplex_t& a)       { return a.imag(); }
+    inline void  Csetreal(oclComplex_t* a, float r) { a->real(r); }
+    inline void  Csetimag(oclComplex_t* a, float i) { a->imag(i); }
+#else
+    typedef struct _oclComplex_t
+    {
+        float val[2]; /*!< real (val[0]) and imaginary (val[1]) parts of complex number */
+    } oclComplex_t;
+    ICLBLAS_ALWAYS_INLINE float Creal(struct _oclComplex_t a)              { return a.val[0]; }
+    ICLBLAS_ALWAYS_INLINE float Cimag(struct _oclComplex_t a)              { return a.val[1]; }
+    ICLBLAS_ALWAYS_INLINE void  Csetreal(struct _oclComplex_t* a, float r) { a->val[0] = r; }
+    ICLBLAS_ALWAYS_INLINE void  Csetimag(struct _oclComplex_t* a, float i) { a->val[1] = i; }
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -119,7 +141,7 @@ typedef enum {
 
 /*!
  * @brief Indicates whether the main diagonal of matrix is unity.
- * 
+ *
  * In case of ::ICLBLAS_DIAG_UNIT the main diagonal is assumed to contain only unit elements and is not referenced.
  */
 typedef enum {
@@ -235,7 +257,7 @@ ICLBLAS_API iclblasStatus_t iclblasSnrm2(iclblasHandle_t handle, int n, float *x
 * @param[in,out] d2     scalar result of the computation
 * @param[in,out] x1     scalar result of the computation
 * @param[in] y1         scalar
-* @param[out] params    vector of 5 elements, param[0] contain the flag, param[1-4] contain the matrix H 
+* @param[out] params    vector of 5 elements, param[0] contain the flag, param[1-4] contain the matrix H
 */
 ICLBLAS_API iclblasStatus_t iclblasSrotmg(iclblasHandle_t handle, float *d1, float *d2, float *x1, const float *y1, float* params);
 
@@ -975,12 +997,12 @@ ICLBLAS_API iclblasStatus_t iclblasSspr(iclblasHandle_t handle, iclblasFillMode_
 
 /*!
  * @brief Performs symmetric matrix by vector multiplication
- * 
+ *
  * @code
  * y = alpha * A * x + beta * y
  * @endcode
  * Where @b alpha and @b beta are scalars, @b x and @b y are @b n element vectors and @b A is the @b n x @b n symmetric matrix in lower or upper mode.
- * 
+ *
  * @param[in] handle handle to the library context
  * @param[in] uplo  indicates if lower or upper part of matrix is stored in @b A
  * @param[in] n     number of rows and columns in @b A; should be at least 0
@@ -1546,12 +1568,12 @@ ICLBLAS_API iclblasStatus_t iclblasCsyr(iclblasHandle_t handle, iclblasFillMode_
 * @param[in] m      number of rows in @b B and @b C
 * @param[in] n      number of columns in @b B and @b C
 * @param[in] alpha  scalar used in multiplication
-* @param[in] A      array of size [@b lda x @b m] where lda is at least max (1, @b m) if side == ICLBLAS_SIDE_LEFT and [@b lda x @b n] where lda is at least max (1, @b n) if side == ICLBLAS_SIDE_RIGHT 
+* @param[in] A      array of size [@b lda x @b m] where lda is at least max (1, @b m) if side == ICLBLAS_SIDE_LEFT and [@b lda x @b n] where lda is at least max (1, @b n) if side == ICLBLAS_SIDE_RIGHT
 * @param[in] lda    first dimension of matrix @b A
-* @param[in] B      array of size [@b ldb x @b n] 
+* @param[in] B      array of size [@b ldb x @b n]
 * @param[in] ldb    first dimension of matrix @b B; must be at least max(1, @b m)
 * @param[in] beta   scalar used in multiplication; if @b beta == 0, @b C does not have to be initialized
-* @param[in,out] C  array of size [@b ldc x @b n] 
+* @param[in,out] C  array of size [@b ldc x @b n]
 * @param[in] ldc    first dimension of matrix @b C; must be at least max(1, @b m)
 */
 ICLBLAS_API iclblasStatus_t iclblasSsymm(iclblasHandle_t handle, iclblasSideMode_t side, iclblasFillMode_t uplo, int m, int n, const float* alpha, float* A, int lda, float* B, int ldb, const float* beta, float* C, int ldc);
@@ -1564,7 +1586,7 @@ ICLBLAS_API iclblasStatus_t iclblasSsymm(iclblasHandle_t handle, iclblasSideMode
 * @endcode
 *
 * Where @b alpha and @b beta are scalars, @b op(A) is @b n x @b k and @b C is symmetric matrix in lower or upper mode.
-* 
+*
 * Aditionally operation on matrix @b A is specified by @b trans value as followed:
 * @code
 * op(A) = A     if trans == ICLBLAS_OP_N
@@ -1591,9 +1613,9 @@ ICLBLAS_API iclblasStatus_t iclblasSsyrk(iclblasHandle_t handle, iclblasFillMode
 * @code
 * C = alpha * (op(A) * op(B)^T + op(B) * op(A)^T) + beta * C
 * @endcode
-* 
+*
 * Where @b alpha and @b beta are scalars, @b op(A) and @b op(B) are @b n x @b k and @b C is symmetric matrix in lower or upper mode.
-* 
+*
 * Additionally operation on matrix @b A is specified by @b trans value as followed:
 * @code
 * op(A) = A     if trans == ICLBLAS_OP_N
@@ -1630,7 +1652,7 @@ ICLBLAS_API iclblasStatus_t iclblasSsyr2k(iclblasHandle_t handle, iclblasFillMod
 * @endcode
 *
 * Where @b alpha and @b beta are scalars and @b A, @b B and @b C are matrices with dimmensions @b m x @b k for @b op(A), @b k x @b n for @b op(B) and @b m x @b n for @b C.
-* 
+*
 * Additionally operation on matrix @b A is specified by @b transa value as followed:
 * @code
 * op(A) = A     if transa == ICLBLAS_OP_N
@@ -1671,14 +1693,14 @@ ICLBLAS_API iclblasStatus_t iclblasSgemm(iclblasHandle_t handle, iclblasOperatio
 * @endcode
 *
 * Where @b alpha is scalars, @b X and @b B are @b m x @b n matrices, and @b A is triangular matrix in lower or upper mode with or without main diagonal.
-* 
-* Additionally operation on matrix @b A is specified by @b trans value as followed: 
-* @code 
+*
+* Additionally operation on matrix @b A is specified by @b trans value as followed:
+* @code
 * op(A) = A     if trans == ICLBLAS_OP_N
 * op(A) = A^T   if trans == ICLBLAS_OP_T
 * op(A) = A^H   if trans == ICLBLAS_OP_C
 * @endcode
-* 
+*
 * The solution X is overwritten on B on exit.
 *
 * @param[in] handle handle to the library context
@@ -1706,7 +1728,7 @@ ICLBLAS_API iclblasStatus_t iclblasStrsm(iclblasHandle_t handle, iclblasSideMode
 *
 * Where @b alpha is scalars, @b B and @b C are @b m x @b n matrices, and @b A is triangular matrix in lower or upper mode with or without main diagonal.
 *
-* Additionally operation on matrix @b A is specified by @b transa value as followed: 
+* Additionally operation on matrix @b A is specified by @b transa value as followed:
 * @code
 * op(A) = A     if transa == ICLBLAS_OP_N
 * op(A) = A^T   if transa == ICLBLAS_OP_T
@@ -1742,11 +1764,11 @@ ICLBLAS_API iclblasStatus_t iclblasStrmm(iclblasHandle_t handle, iclblasSideMode
 * @code
 * C = alpha * op(A) * op(B) + beta * C
 * @endcode
-* 
+*
 * Where @b alpha and @b beta are scalars and @b A, @b B and @b C are matrices with dimmensions @b m x @b k for @b op(A), @b k x @b n for @b op(B) and @b m x @b n for @b C.
 *
-* Additionally operation on matrix @b A is specified by @b transa value as followed: 
-* @code 
+* Additionally operation on matrix @b A is specified by @b transa value as followed:
+* @code
 * op(A) = A     if transa == ICLBLAS_OP_N
 * op(A) = A^T   if transa == ICLBLAS_OP_T
 * op(A) = A^H   if transa == ICLBLAS_OP_C
@@ -1816,10 +1838,10 @@ ICLBLAS_API iclblasStatus_t iclblasCsymm(iclblasHandle_t handle, iclblasSideMode
 * op(A) = A     if trans == ICLBLAS_OP_N
 * op(A) = A^T   if trans == ICLBLAS_OP_T
 * @endcode
-* 
+*
 * Additionally operation on matrix @b B is specified by @b trans value as followed:
 * @code
-* op(B) = B     if trans == ICLBLAS_OP_N 
+* op(B) = B     if trans == ICLBLAS_OP_N
 * op(B) = B^T   if trans == ICLBLAS_OP_T
 * @endcode
 *
@@ -1850,7 +1872,7 @@ ICLBLAS_API iclblasStatus_t iclblasCsyr2k(iclblasHandle_t handle, iclblasFillMod
 *
 * Additionally operation on matrix @b A is specified by @b trans value as followed:
 * @code
-* op(A) = A     if trans == ICLBLAS_OP_N 
+* op(A) = A     if trans == ICLBLAS_OP_N
 * op(A) = A^T   if trans == ICLBLAS_OP_T
 * @endcode
 *
@@ -1884,7 +1906,7 @@ ICLBLAS_API iclblasStatus_t iclblasCsyrk(iclblasHandle_t handle, iclblasFillMode
 * op(A) = A^T   if trans == ICLBLAS_OP_T
 * op(A) = A^H   if trans == ICLBLAS_OP_C
 * @endcode
-* 
+*
 * The solution X is overwritten on B on exit.
 *
 * @param[in] handle handle to the library context
@@ -1911,7 +1933,7 @@ ICLBLAS_API iclblasStatus_t iclblasCtrsm(iclblasHandle_t handle, iclblasSideMode
 *
 * Where @b alpha and @b beta are scalars, @b op(A) is @b n x @b k and @b C is Hermitian matrix in lower or upper mode.
 *
-* Additionally operation on matrix @b A is specified by @b trans value as followed: 
+* Additionally operation on matrix @b A is specified by @b trans value as followed:
 * @code
 * op(A) = A     if trans == ICLBLAS_OP_N
 * op(A) = A^H   if trans == ICLBLAS_OP_C
@@ -1939,16 +1961,16 @@ ICLBLAS_API iclblasStatus_t iclblasCherk(iclblasHandle_t handle, iclblasFillMode
 * @endcode
 *
 * Where @b alpha and @b beta are scalars, @b op(A) and @b op(B) are @b n x @b k and @b C is Hermitian matrix in lower or upper mode.
-* 
-* Additionally operation on matrix @b A is specified by @b trans value as followed: 
+*
+* Additionally operation on matrix @b A is specified by @b trans value as followed:
 * @code
 * op(A) = A     if trans == ICLBLAS_OP_N
 * op(A) = A^H   if trans == ICLBLAS_OP_C
 * @endcode
-* 
-* Additionally operation on matrix @b B is specified by @b trans value as followed: 
+*
+* Additionally operation on matrix @b B is specified by @b trans value as followed:
 * @code
-* op(B) = B     if trans == ICLBLAS_OP_N 
+* op(B) = B     if trans == ICLBLAS_OP_N
 * op(B) = B^H   if trans == ICLBLAS_OP_C
 * @endcode
 *
@@ -1978,7 +2000,7 @@ ICLBLAS_API iclblasStatus_t iclblasCher2k(iclblasHandle_t handle, iclblasFillMod
 *
 * Where @b alpha is scalars, @b B and @b C are @b m x @b n matrices, and @b A is triangular matrix in lower or upper mode with or without main diagonal.
 *
-* Additionally  operation on matrix @b B is specified by @b transa value as followed: 
+* Additionally  operation on matrix @b B is specified by @b transa value as followed:
 * @code
 * op(A) = A     if transa == ICLBLAS_OP_N
 * op(A) = A^T   if transa == ICLBLAS_OP_T

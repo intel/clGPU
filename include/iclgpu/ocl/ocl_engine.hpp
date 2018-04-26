@@ -32,7 +32,8 @@ class ocl_engine : public engine, public context::element<ocl_engine>, public st
 public:
     explicit ocl_engine(const std::shared_ptr<iclgpu::context>& ctx);
 
-    ~ocl_engine() override;
+    ~ocl_engine() override; // -required because ocl_toolkit is incomplete type
+    primitive_db* get_primitive_db() override;
     std::shared_ptr<kernel_command>      get_kernel(const std::string& name, const std::string& module = std::string()) override;
     std::shared_ptr<buffer>              create_buffer(size_t size, void* ptr) override;
     std::shared_ptr<raise_event_command> get_raise_event_command() override;

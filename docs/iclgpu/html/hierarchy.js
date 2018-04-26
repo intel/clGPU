@@ -8,8 +8,7 @@ var hierarchy =
       [ "context", "classiclgpu_1_1context.html", null ]
     ] ],
     [ "element", null, [
-      [ "dispatcher", "classiclgpu_1_1dispatcher.html", null ],
-      [ "primitive_db", "classiclgpu_1_1primitive__db.html", null ]
+      [ "dispatcher", "classiclgpu_1_1dispatcher.html", null ]
     ] ],
     [ "container< C >::element< T >", "classiclgpu_1_1container_1_1element.html", null ],
     [ "enable_shared_from_this", null, [
@@ -41,5 +40,6 @@ var hierarchy =
       [ "error_unimplemented", "classiclgpu_1_1error__unimplemented.html", null ],
       [ "error_unsupported", "classiclgpu_1_1error__unsupported.html", null ]
     ] ],
-    [ "nd_range", "structiclgpu_1_1nd__range.html", null ]
+    [ "nd_range", "structiclgpu_1_1nd__range.html", null ],
+    [ "primitive_db", "classiclgpu_1_1primitive__db.html", null ]
 ];

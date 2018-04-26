@@ -1,6 +1,7 @@
 var icl_b_l_a_s_8h =
 [
     [ "oclComplex_t", "structocl_complex__t.html", "structocl_complex__t" ],
+    [ "ICLBLAS_ALWAYS_INLINE", "icl_b_l_a_s_8h.html#a3ef1379010e7582ea1c36bfcc2a21f4b", null ],
     [ "ICLBLAS_API", "icl_b_l_a_s_8h.html#a4c0976c08e63de7bdc64faaab18cf121", null ],
     [ "iclblasHandle_t", "group__datatypes.html#gaa4fa79bea88d1ee78749668870106be6", null ],
     [ "iclblasDiagType_t", "group__datatypes.html#ga3b02a3ff7f0433a8f28414fbc58593ca", [
@@ -33,6 +34,10 @@ var icl_b_l_a_s_8h =
       [ "ICLBLAS_STATUS_LICENSE_ERROR", "group__datatypes.html#gga55ac9666d5ebab0cc0740d2df91dd885a38977f91dd156ae2e4bd45f26ee9db6c", null ],
       [ "ICLBLAS_STATUS_ERROR", "group__datatypes.html#gga55ac9666d5ebab0cc0740d2df91dd885a6ada9272c3e770bc553238a4b13b6efd", null ]
     ] ],
+    [ "Cimag", "icl_b_l_a_s_8h.html#a37f3039d48ce36eadc9fd8553e1e6302", null ],
+    [ "Creal", "icl_b_l_a_s_8h.html#a4815f838fab44ed43b09ea72b4f35d80", null ],
+    [ "Csetimag", "icl_b_l_a_s_8h.html#a3a95cbdc0941aca14e21cbde027d194d", null ],
+    [ "Csetreal", "icl_b_l_a_s_8h.html#a1539ae833bc660226530234d74e7ca06", null ],
     [ "iclblasCaxpy", "group___b_l_a_s___l1___c.html#gac5024e3efc39298f227ba815f367cd05", null ],
     [ "iclblasCcopy", "group___b_l_a_s___l1___c.html#ga4725ec378a5d033cacf71455de94e552", null ],
     [ "iclblasCdotc", "group___b_l_a_s___l1___c.html#ga00917530f4d1e02eccfd3e10e5e90472", null ],

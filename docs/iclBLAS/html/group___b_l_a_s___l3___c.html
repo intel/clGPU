@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>iclBLAS: BLAS Level 3 Complex</title>
+<title>Intel clBLAS: BLAS Level 3 Complex</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">iclBLAS
+   <div id="projectname">Intel clBLAS
    </div>
   </td>
  </tr>
@@ -428,7 +428,7 @@ Functions</h2></td></tr>
 
 <p>Performs Hermitian rank-2k update. </p>
 <div class="fragment"><div class="line">C = alpha * op(A) * op(B)^H + \conjugate{alpha} * op(B) * op(A)^H + beta * C</div></div><!-- fragment --><p>Where <b>alpha</b> and <b>beta</b> are scalars, <b>op(A)</b> and <b>op(B)</b> are <b>n</b> x <b>k</b> and <b>C</b> is Hermitian matrix in lower or upper mode.</p>
-<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(A) = A^H   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6ba15d7a804c84f2f9e4f9a9c6423dd6b5b">ICLBLAS_OP_C</a></div></div><!-- fragment --><p>Additionally operation on matrix <b>B</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(B) = B     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a> </div><div class="line">op(B) = B^H   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6ba15d7a804c84f2f9e4f9a9c6423dd6b5b">ICLBLAS_OP_C</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(A) = A^H   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6ba15d7a804c84f2f9e4f9a9c6423dd6b5b">ICLBLAS_OP_C</a></div></div><!-- fragment --><p>Additionally operation on matrix <b>B</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(B) = B     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(B) = B^H   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6ba15d7a804c84f2f9e4f9a9c6423dd6b5b">ICLBLAS_OP_C</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">handle</td><td>handle to the library context </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>indicates if lower or upper part of matrix is stored in <b>C</b> </td></tr>
@@ -759,7 +759,7 @@ Functions</h2></td></tr>
 
 <p>Performs symmetric rank-2k update. </p>
 <div class="fragment"><div class="line">C = alpha * (op(A) * op(B)^T + op(B) * op(A)^T) + beta * C</div></div><!-- fragment --><p>Where <b>alpha</b> and <b>beta</b> are scalars, <b>op(A)</b> and <b>op(B)</b> are <b>n</b> x <b>k</b> and <b>C</b> is symmetric matrix in lower or upper mode.</p>
-<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(A) = A^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><p>Additionally operation on matrix <b>B</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(B) = B     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a> </div><div class="line">op(B) = B^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(A) = A^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><p>Additionally operation on matrix <b>B</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(B) = B     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(B) = B^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">handle</td><td>handle to the library context </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>indicates if lower or upper part of matrix is stored in <b>C</b> </td></tr>
@@ -862,7 +862,7 @@ Functions</h2></td></tr>
 
 <p>Performs symmetric rank-k update. </p>
 <div class="fragment"><div class="line">C = alpha * op(A) * op(A)^T + beta * C</div></div><!-- fragment --><p>Where <b>alpha</b> and <b>beta</b> are scalars, <b>op(A)</b> is <b>n</b> x <b>k</b> and <b>C</b> is symmetric matrix in lower or upper mode.</p>
-<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a> </div><div class="line">op(A) = A^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Additionally operation on matrix <b>A</b> is specified by <b>trans</b> value as followed: </p><div class="fragment"><div class="line">op(A) = A     <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6babceb85f3cc5190dc9ca49be0929d84e4">ICLBLAS_OP_N</a></div><div class="line">op(A) = A^T   <span class="keywordflow">if</span> trans == <a class="code" href="group__datatypes.html#ggad3498c0eb1189cfc33aa3e2d9052ff6bac28e2d1ec12ffda6273f7a270ca7e4f0">ICLBLAS_OP_T</a></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">handle</td><td>handle to the library context </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">uplo</td><td>indicates if lower or upper part of matrix is stored in <b>C</b> </td></tr>

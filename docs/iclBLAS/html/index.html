@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>iclBLAS: Intel&reg; Compute Libraries for GPU BLAS library (iclBLAS)</title>
+<title>Intel clBLAS: Intel&reg; Compute Libraries for GPU BLAS library (Intel&reg; clBLAS)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">iclBLAS
+   <div id="projectname">Intel clBLAS
    </div>
   </td>
  </tr>
@@ -59,16 +59,17 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="headertitle">
-<div class="title">Intel&reg; Compute Libraries for GPU BLAS library (iclBLAS) </div>  </div>
+<div class="title">Intel&reg; Compute Libraries for GPU BLAS library (Intel&reg; clBLAS) </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2>Introduction</h2>
-<p><em>Intel&reg; Compute Libraries BLAS</em> (<em>iclBLAS</em>) is an open source implementation of Basic Linear Algebra Subprograms (BLAS) functions.</p>
-<p><em>iclBLAS</em> is intended to accelerate mathematical operations using Intel&reg; Processor Graphics - including HD Graphics and Iris&reg; Graphics.</p>
+<p><em>Intel&reg; Compute Libraries BLAS</em> (<em>Intel&reg; clBLAS</em>) is an open source implementation of Basic Linear Algebra Subprograms (BLAS) functions.</p>
+<p><em>Intel&reg; clBLAS</em> is intended to accelerate mathematical operations using Intel&reg; Processor Graphics - including HD Graphics and Iris&reg; Graphics.</p>
 <p>It includes optimized kernels for mathematical operations based on BLAS Library written with C and C++ interfaces.</p>
 <h2>Limitations</h2>
-<p>At this time <em>iclBLAS</em> library supports only positive values for vector strides (i.e. <b>incx</b>, <b>incy</b>, ..).</p>
-<p><em>iclBLAS</em> supports Intel&reg; HD Graphics and Intel&reg; Iris&reg; Graphics and is optimized for:</p><ul>
+<p>At this time <em>Intel&reg; clBLAS</em> library supports only positive values for vector strides (i.e. <b>incx</b>, <b>incy</b>, ..).</p>
+<p><em>Intel&reg; clBLAS</em> supports Intel&reg; HD Graphics and Intel&reg; Iris&reg; Graphics and is optimized for:</p>
+<ul>
 <li>Codename <em>Skylake</em>:<ul>
 <li>Intel&reg; HD Graphics 510 (GT1, <em>client</em> market)</li>
 <li>Intel&reg; HD Graphics 515 (GT2, <em>client</em> market)</li>
@@ -100,9 +101,9 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 </ul>
 <p>clGPU currently uses OpenCL&trade; with multiple Intel&reg; OpenCL&trade; extensions and requires Intel&reg; Graphics Driver to run.</p>
-<p>The definition of <em>iclBLAS</em> may differ from BLAS interface in some cases, so be informed to check our implementation definition first.</p>
+<p>The definition of <em>Intel&reg; clBLAS</em> may differ from BLAS interface in some cases, so be informed to check our implementation definition first.</p>
 <h2>Usage</h2>
-<p>To use the <em>iclBLAS</em> Library, user has to allocate required by functions parameters in host memory space (The Library will automatically copy data to GPU memory space if needed). Next step is to fill allocated buffers with data and call the function from API. When computation ends result will be automatically copied back to host memory and stored as function definition describes. </p><hr/>
+<p>To use the <em>Intel&reg; clBLAS</em> Library, user has to allocate required by functions parameters in host memory space (The Library will automatically copy data to GPU memory space if needed). Next step is to fill allocated buffers with data and call the function from API. When computation ends result will be automatically copied back to host memory and stored as function definition describes. </p><hr/>
 <p>Copyright &copy; 2018, Intel&reg; Corporation </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>iclGPU: primitive_db Class Reference</title>
+<title>Intel clGPU: primitive_db Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">iclGPU
+   <div id="projectname">Intel clGPU
    </div>
   </td>
  </tr>
@@ -59,7 +59,9 @@ $(document).ready(function(){initNavTree('classiclgpu_1_1primitive__db.html','')
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classiclgpu_1_1primitive__db-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">primitive_db Class Reference</div>  </div>
@@ -70,29 +72,53 @@ $(document).ready(function(){initNavTree('classiclgpu_1_1primitive__db.html','')
  <a href="classiclgpu_1_1primitive__db.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="primitive__db_8hpp_source.html">primitive_db.hpp</a>&gt;</code></p>
-
-<p>Inherits element&lt; primitive_db &gt;.</p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8186af4004be3ca2fcae8ed535edd23b"><td class="memItemLeft" align="right" valign="top"><a id="a8186af4004be3ca2fcae8ed535edd23b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>db_type</b> = std::unordered_map&lt; std::string, std::string &gt;</td></tr>
+<tr class="separator:a8186af4004be3ca2fcae8ed535edd23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ee2ff932d60fd838984f45da994f4f6"><td class="memItemLeft" align="right" valign="top"><a id="a0ee2ff932d60fd838984f45da994f4f6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = db_type::value_type</td></tr>
+<tr class="separator:a0ee2ff932d60fd838984f45da994f4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afcf226a6201de6344eef05879068e065"><td class="memItemLeft" align="right" valign="top"><a id="afcf226a6201de6344eef05879068e065"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>primitive_db</b> (const std::shared_ptr&lt; <a class="el" href="classiclgpu_1_1context.html">iclgpu::context</a> &gt; &amp;ctx)</td></tr>
-<tr class="separator:afcf226a6201de6344eef05879068e065"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97425eadb0da2898918939ba1812af98"><td class="memItemLeft" align="right" valign="top"><a id="a97425eadb0da2898918939ba1812af98"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#a97425eadb0da2898918939ba1812af98">get</a> (const std::string &amp;id)</td></tr>
 <tr class="memdesc:a97425eadb0da2898918939ba1812af98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get kernel source code by it's name. <br /></td></tr>
 <tr class="separator:a97425eadb0da2898918939ba1812af98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5aa5a5600055695de103ff1284001ce9"><td class="memItemLeft" align="right" valign="top"><a id="a5aa5a5600055695de103ff1284001ce9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#a5aa5a5600055695de103ff1284001ce9">insert</a> (std::initializer_list&lt; std::pair&lt; std::string, std::string &gt;&gt; ilist)</td></tr>
-<tr class="memdesc:a5aa5a5600055695de103ff1284001ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add kernel sources to the DB. <br /></td></tr>
-<tr class="separator:a5aa5a5600055695de103ff1284001ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b48a8495428af8cebd21ba374a476a0"><td class="memItemLeft" align="right" valign="top"><a id="a5b48a8495428af8cebd21ba374a476a0"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#a5b48a8495428af8cebd21ba374a476a0">insert</a> (const value_type &amp;value)</td></tr>
+<tr class="memdesc:a5b48a8495428af8cebd21ba374a476a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add kernel source to the DB. <br /></td></tr>
+<tr class="separator:a5b48a8495428af8cebd21ba374a476a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e964aa7e6b5fe0898e9bb7870fc9dc3"><td class="memTemplParams" colspan="2"><a id="a3e964aa7e6b5fe0898e9bb7870fc9dc3"></a>
+template&lt;class InputIt &gt; </td></tr>
+<tr class="memitem:a3e964aa7e6b5fe0898e9bb7870fc9dc3"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_convertible&lt; decltype(*std::declval&lt; InputIt &gt;)), value_type &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#a3e964aa7e6b5fe0898e9bb7870fc9dc3">insert_range</a> (InputIt first, InputIt last)</td></tr>
+<tr class="memdesc:a3e964aa7e6b5fe0898e9bb7870fc9dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add kernel sources to the DB. <br /></td></tr>
+<tr class="separator:a3e964aa7e6b5fe0898e9bb7870fc9dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76052d806e874fbbafa75dae1e99207a"><td class="memTemplParams" colspan="2"><a id="a76052d806e874fbbafa75dae1e99207a"></a>
+template&lt;class Range &gt; </td></tr>
+<tr class="memitem:a76052d806e874fbbafa75dae1e99207a"><td class="memTemplItemLeft" align="right" valign="top">std::enable_if_t&lt; std::is_convertible&lt; decltype(*std::cbegin(std::declval&lt; Range &gt;))), value_type &gt;::value &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#a76052d806e874fbbafa75dae1e99207a">insert</a> (const Range &amp;range)</td></tr>
+<tr class="memdesc:a76052d806e874fbbafa75dae1e99207a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add kernel sources to the DB. <br /></td></tr>
+<tr class="separator:a76052d806e874fbbafa75dae1e99207a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af321b54833a95496571c127de1386c13"><td class="memItemLeft" align="right" valign="top"><a id="af321b54833a95496571c127de1386c13"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classiclgpu_1_1primitive__db.html#af321b54833a95496571c127de1386c13">insert</a> (const std::initializer_list&lt; value_type &gt; &amp;ilist)</td></tr>
+<tr class="memdesc:af321b54833a95496571c127de1386c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add kernel sources to the DB. <br /></td></tr>
+<tr class="separator:af321b54833a95496571c127de1386c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aef935e5d7f359c4a3635dab947fe2c59"><td class="memItemLeft" align="right" valign="top"><a id="aef935e5d7f359c4a3635dab947fe2c59"></a>
+db_type&#160;</td><td class="memItemRight" valign="bottom"><b>_db</b></td></tr>
+<tr class="separator:aef935e5d7f359c4a3635dab947fe2c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper class to store kernel sources. </p>
 
 <p class="definition">Definition at line <a class="el" href="primitive__db_8hpp_source.html#l00024">24</a> of file <a class="el" href="primitive__db_8hpp_source.html">primitive_db.hpp</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>C:/Works/BLAS/genCL_primer/include/iclgpu/<a class="el" href="primitive__db_8hpp_source.html">primitive_db.hpp</a></li>
+<li><a class="el" href="primitive__db_8hpp_source.html">primitive_db.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
