@@ -18,7 +18,7 @@ __kernel void Crot_naive(int n, __global complex_t* x, int incx, __global comple
     for (uint i = 0; i < n; i++)
     { 
         complex_t _x = cfmaf(x[i * incx], c, cmul(s, y[i * incy]));
-        y[i * incy] = cfmaf(y[i * incy], c, cmul(cneg(s), x[i * incx]));
+        y[i * incy] = cfmaf(y[i * incy], c, cmul(cneg(conjg(s)), x[i * incx]));
         x[i * incx] = _x;
     }
 }

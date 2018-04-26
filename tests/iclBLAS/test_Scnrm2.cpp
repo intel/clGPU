@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,12 +54,7 @@ TEST(Scnrm2, Complex_4)
 
     for (int i = 0; i < n; i++)
     {
-        oclComplex_t complex = x[i * incx];
-
-        float real = complex.val[0];
-        float imag = complex.val[1];
-
-        ref += real * real + imag * imag;
+        ref += std::norm(x[i * incx]);
     }
 
     ref = std::sqrt(ref);

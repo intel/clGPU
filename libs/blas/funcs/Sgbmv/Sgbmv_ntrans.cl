@@ -13,18 +13,31 @@
  * limitations under the License.
  */
 
-#define ACCESS(a, m, n, lda) a[(n)*(lda) + (m)]
+#define IDX(row, col, ld) ((col)*(lda) + (row))
+#define IDX_B(row, col, ld, ku) IDX((ku) + (row) - (col), col, ld)
 
-__kernel void Sgbmv_ntrans(int n, int kl, int ku, float alpha, __global float* a, int lda, __global float* x, int incx, float beta, __global float* y, int incy)
+__kernel void Sgbmv_ntrans(uint n, uint kl, uint ku, float alpha, __global float* A, uint lda, __global float* x, uint incx, float beta, __global float* y, uint incy)
 {
-    int gid = get_global_id(0);
+    const uint gid = get_global_id(0);
+    const uint row = gid;
 
-    float out_y = y[gid*incy]*beta;
-    // Calculate alpha*A*x
-    float tmp_x = 0.f;
-    for (int j=max(gid-kl, 0); j<min(gid+ku+1, n); j++) {
-        tmp_x += ACCESS(a, ku+gid-j, j, lda)*x[j*incx];
+    float out_y = 0.f;
+    if (beta != 0.f)
+    {
+        out_y = y[row * incy] * beta;
     }
-    out_y += alpha*tmp_x;
-    y[gid*incy] = out_y;
+    // Calculate alpha*A^T*x
+    const uint start_col = max(row, kl) - kl;
+    const uint end_col = min(row + ku + 1, n);
+
+    float prod = 0.f;
+
+    for (uint col = start_col; col < end_col; ++col) {
+        float this_x = x[col * incx];
+        float this_A = A[IDX_B(row, col, lda, ku)];
+        prod = mad(this_A, this_x, prod);
+    }
+
+    out_y = mad(alpha, prod, out_y);
+    y[row * incy] = out_y;
 }

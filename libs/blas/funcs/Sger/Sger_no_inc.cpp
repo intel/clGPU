@@ -21,11 +21,10 @@ namespace iclgpu { namespace functions { namespace implementations {
 
 bool Sger_no_inc::accept(const Sger::params& params, Sger::score& score)
 {
-    if (params.incx == 1 && params.incy == 1) {
-        score.incx = 1.1f;
-        return true;
-    }
-    return false;
+    if (params.incx != 1 || params.incy != 1)
+        return false;
+    score.incx = 1.1f;
+    return true;
 }
 
 event Sger_no_inc::execute(const Sger::params& params, const std::vector<event>& dep_events)

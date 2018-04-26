@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Crotg, naive_5x2)
 {
@@ -39,11 +40,8 @@ TEST(Crotg, naive_5x2)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    ASSERT_FLOAT_EQ(ref_a.val[0], a.val[0]);
-    ASSERT_FLOAT_EQ(ref_a.val[1], a.val[1]);
-    ASSERT_FLOAT_EQ(ref_b.val[0], b.val[0]);
-    ASSERT_FLOAT_EQ(ref_b.val[1], b.val[1]);
-    ASSERT_FLOAT_EQ(ref_c, c);
-    ASSERT_FLOAT_EQ(ref_s.val[0], s.val[0]);
-    ASSERT_FLOAT_EQ(ref_s.val[1], s.val[1]);
+    EXPECT_COMPLEX_EQ(ref_a, a);
+    EXPECT_COMPLEX_EQ(ref_b, b);
+    EXPECT_FLOAT_EQ(ref_c, c);
+    EXPECT_COMPLEX_EQ(ref_s, s);
 }

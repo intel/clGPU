@@ -25,7 +25,6 @@ namespace iclgpu {
             {
                 if (params.uplo == 0)
                 {
-                    score.uplo = 2.0f;
                     return true;
                 }
                 else
@@ -38,45 +37,22 @@ namespace iclgpu {
             {
                 auto engine = context()->get_engine();
                 auto kernel = engine->get_kernel(kernel_name, module_name);
+                size_t buf_matrix_size = params.n * params.lda;
+                size_t buf_vector_x_size = params.n * params.incx;
+                size_t buf_vector_y_size = params.n * params.incy;
 
-                auto matrix_a_size = params.n * params.n;
-                auto vector_size = params.n;
-
-                //N
                 kernel->set_arg(0, params.n);
-
-                //Alpha
                 kernel->set_arg(1, params.alpha);
-
-                //Matrix A
-                auto buf_matrix_a = engine->get_input_buffer(params.A, matrix_a_size);
-                kernel->set_arg(2, buf_matrix_a);
-
-                //lda
+                auto buf_A = engine->get_input_buffer(params.A, buf_matrix_size);
+                kernel->set_arg(2, buf_A);
                 kernel->set_arg(3, params.lda);
-
-                //Vector X
-                auto buf_vector_x = engine->get_input_buffer(params.x, vector_size);
-                kernel->set_arg(4, buf_vector_x);
-
-                //Incx
+                auto buf_x = engine->get_input_buffer(params.x, buf_vector_x_size);
+                kernel->set_arg(4, buf_x);
                 kernel->set_arg(5, params.incx);
-
-                //Beta
                 kernel->set_arg(6, params.beta);
-
-                //Vector Y
-                auto buf_vector_y = engine->get_inout_buffer(params.y, vector_size);
-                kernel->set_arg(7, buf_vector_y);
-
-                //Incy
+                auto buf_y = engine->get_inout_buffer(params.y, buf_vector_y_size);
+                kernel->set_arg(7, buf_y);
                 kernel->set_arg(8, params.incy);
-
-                //Temp Global Buffer
-                auto buf_tempL = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(9, buf_tempL);
-                auto buf_tempR = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(10, buf_tempR);
 
                 auto gws = nd_range(1);
                 auto lws = null_range;

@@ -17,11 +17,11 @@
 
 #define MAT_ACCESS(A, row, col, N) A[col*N + row]
 
-TEST(Sgemv, N_25x25) {
+TEST(Sgemv, N_256x256) {
     iclblasOperation_t uplo = ICLBLAS_OP_N;
-    const int n = 25;
-    const int m = 25;
-    int lda = 25;
+    const int n = 256;
+    const int m = 256;
+    int lda = 256;
     const int incx = 1;
     const int incy = 1;
 
@@ -72,13 +72,13 @@ TEST(Sgemv, N_25x25) {
 
     for (int i = 0; i < m * incy; ++i)
     {
-        EXPECT_FLOAT_EQ(eq_result[i], y[i]);
+        EXPECT_NEAR(eq_result[i], y[i], 0.00001f);
     }
 }
 
 TEST(Sgemv, N_15x25_inc) {
     iclblasOperation_t uplo = ICLBLAS_OP_N;
-    const int n = 15;
+    const int n = 20;
     const int m = 25;
     int lda = 25;
     const int incx = 2;

@@ -14,65 +14,258 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <complex>
+#include "blas_reference.hpp"
+#include "iclblas_test_base.hpp"
+#include "gtest_utils.hpp"
 
-TEST(Ssyr2, naive_test_lower) {
-    iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_LOWER;
-    const int n = 2;
-    int lda = 2;
-    const int incx = 1;
-    const int incy = 1;
-    float A[n*2] = { 1.f,
-                     3.f, 4.f };
-    float x[n] = { 1.f, 2.f };
-    float y[n] = { 1.f, 2.f };
-    float alpha = 2.f;
+#include <stdexcept>
 
-    float ex_result[n*2] = { 5.f, 3.f, 12.f};
-
-    iclblasHandle_t handle;
-    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
-    status = iclblasCreate(&handle);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-
-    status = iclblasSsyr2(handle, uplo, n, &alpha, x, incx, y, incy, A, lda);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-    status = iclblasDestroy(handle);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-
-    for (int i = 0; i < 3; ++i)
+// TODO Move to more suitable place
+inline char iclblasFillModeCast(iclblasFillMode_t uplo)
+{
+    switch (uplo)
     {
-        EXPECT_FLOAT_EQ(ex_result[i], A[i]);
+    case ICLBLAS_FILL_MODE_UPPER:
+        return 'U';
+    case ICLBLAS_FILL_MODE_LOWER:
+        return 'L';
+    default:
+        throw std::invalid_argument("uplo");
     }
-
 }
 
-TEST(Ssyr2, naive_test_upper) {
-    iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_UPPER;
-    const int n = 2;
-    int lda = 2;
+int Ssyr2_reference(iclblasFillMode_t uplo, int n, float alpha, array_ref<float> x, int incx, array_ref<float> y, int incy, array_ref<float> A, int lda)
+{
+    return Ssyr2_reference(iclblasFillModeCast(uplo), n, alpha, x, incx, y, incy, A, lda);
+}
+
+using Ssyr2 = iclblas_test_base;
+
+TEST_F(Ssyr2, upper)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_UPPER;
+
+    const int n = 64;
+    const int lda = n;
     const int incx = 1;
     const int incy = 1;
-    float A[n*2] = { 1.f, 2.f,
-                          4.f };
-    float x[n] = { 1.f, 2.f };
-    float y[n] = { 1.f, 2.f };
-    float alpha = 2.f;
+    const float alpha = 1.f;
 
-    float ex_result[n*2] = { 5.f, 10.f, 4.f };
-
-    iclblasHandle_t handle;
-    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
-    status = iclblasCreate(&handle);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-
-    status = iclblasSsyr2(handle, uplo, n, &alpha, x, incx, y, incy, A, lda);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-    status = iclblasDestroy(handle);
-    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-
-    for (int i = 0; i < 3; ++i)
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
     {
-        EXPECT_FLOAT_EQ(ex_result[i], A[i]);
+        A[i] = 0.75f * i;
     }
 
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
+}
+
+TEST_F(Ssyr2, upper_inc)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_UPPER;
+
+    const int n = 64;
+    const int lda = n;
+    const int incx = 2;
+    const int incy = 4;
+    const float alpha = 1.f;
+
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
+    {
+        A[i] = 0.75f * i;
+    }
+
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
+}
+
+TEST_F(Ssyr2, upper_lda)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_UPPER;
+
+    const int n = 512;
+    const int lda = 542;
+    const int incx = 1;
+    const int incy = 1;
+    const float alpha = 1.f;
+
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
+    {
+        A[i] = 0.75f * i;
+    }
+
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
+}
+
+TEST_F(Ssyr2, lower)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_LOWER;
+
+    const int n = 64;
+    const int lda = n;
+    const int incx = 1;
+    const int incy = 1;
+    const float alpha = 1.f;
+
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
+    {
+        A[i] = 0.75f * i;
+    }
+
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
+}
+
+TEST_F(Ssyr2, lower_inc)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_LOWER;
+
+    const int n = 64;
+    const int lda = n;
+    const int incx = 2;
+    const int incy = 4;
+    const float alpha = 1.f;
+
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
+    {
+        A[i] = 0.75f * i;
+    }
+
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
+}
+
+TEST_F(Ssyr2, lower_lda)
+{
+    const iclblasFillMode_t uplo = ICLBLAS_FILL_MODE_LOWER;
+
+    const int n = 512;
+    const int lda = 542;
+    const int incx = 1;
+    const int incy = 1;
+    const float alpha = 1.f;
+
+    std::vector<float> A(n * lda);
+    for (int i = 0; i < n*lda; i++)
+    {
+        A[i] = 0.75f * i;
+    }
+
+    std::vector<float> x(n * incx);
+    for (int i = 0; i < n; i++)
+    {
+        x[i*incx] = 0.25f * i;
+    }
+
+    std::vector<float> y(n * incy);
+    for (int i = 0; i < n; i++)
+    {
+        y[i*incy] = 1.f * i;
+    }
+
+    auto expected_result = A;
+
+    Ssyr2_reference(uplo, n, alpha, x, incx, y, incy, expected_result, lda);
+
+    auto status = iclblasSsyr2(_handle, uplo, n, &alpha, x.data(), incx, y.data(), incy, A.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    EXPECT_PRED_FORMAT2(AssertArraysEqual<float>, expected_result, A);
 }

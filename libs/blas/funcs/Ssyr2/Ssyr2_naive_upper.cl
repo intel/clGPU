@@ -13,65 +13,16 @@
  * limitations under the License.
  */
 
-__kernel void Ssyr2_naive_upper(int uplo, int n, float alpha, __global float* x, int incx, __global float* y, int incy, __global float* A, int lda,
- __global float* tempMatrix1, __global float* tempMatrix2, __global float* tempMatrix, __global float* tempX, __global float* tempY)
-{
-    int i = 0;
-    int j = 0;
+#define MAT_ACCESS(A, r, c, n) A[c * n + r] 
 
-    //--------------- First Side Operation: alpha * x * y' ------------------
-    
-    //alpha * x
-    for(i = 0; i<n; ++i)
-        {
-            tempX[i * incx] = alpha * x[i * incx];
-        }
-
-    // tempX * y'
-    for(i = 0; i<n; ++i)
+__kernel void Ssyr2_naive_upper(uint n, float alpha, const __constant float* x, int incx, const __constant float* y, int incy, __global float* A, uint lda)
+{   
+    for (uint row_id = 0; row_id < n; ++row_id)
     {
-        for(j = 0; j<n; ++j)
+        for (uint col_id = row_id; col_id < n; ++col_id)
         {
-            tempMatrix1[i*n + j] = tempX[i] * y[j];
+            float rank_delta = fma(x[row_id * incx], y[col_id * incy], y[row_id * incy] * x[col_id * incx]);
+            MAT_ACCESS(A, row_id, col_id, lda) = fma(alpha, rank_delta, MAT_ACCESS(A, row_id, col_id, lda));
         }
     }
-    //--------------------------- First Side End ---------------------------------
-
-    //--------------- Second Side Operation: alpha * y * x' ------------------
-    
-    //alpha * y
-    for(i = 0; i<n; ++i)
-        {
-            tempY[i * incy] = alpha * y[i * incy];
-        }
-
-    // tempY * x'
-    for(i = 0; i<n; ++i)
-    {
-        for(j = 0; j<n; ++j)
-        {
-            tempMatrix2[i*n + j] = tempY[i] * x[j];
-        }
-    }
-    //--------------------------- Second Side End ---------------------------------
-
-    //----------------------- Add Matrices tempX + tempY --------------------------
-    for(i = 0; i<n; ++i)
-    {
-        for(j = 0; j<n; ++j)
-        {
-            tempMatrix[i*n + j] = tempMatrix1[i*n + j] + tempMatrix2[i*n + j];
-        }
-    }
-    //----------------------- End Add Matrices tempMatrix1 + tempMatrix2 --------------------------
-
-    //----------------------- Final Add Matrices tempMatrix + A [Upper] --------------------------
-    for(i = 0; i<n; ++i)
-    {
-        for(j = 0; j<n; ++j)
-        {
-            if(j>= i) A[i*lda + j] = tempMatrix[i*lda + j] + A[i*lda + j];
-        }
-    }
-    //----------------------- End Final Add Matrices tempMatrix + A [Upper] --------------------------
 }

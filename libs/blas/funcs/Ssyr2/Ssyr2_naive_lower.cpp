@@ -17,87 +17,49 @@
 static const char* module_name = "Ssyr2_naive_lower";
 static const char* kernel_name = "Ssyr2_naive_lower";
 
-namespace iclgpu {
-    namespace functions {
-        namespace implementations {
+#define ICLBLAS_FILL_MODE_UPPER (0)
+#define ICLBLAS_FILL_MODE_LOWER (1)
 
-            bool Ssyr2_naive_lower::accept(const Ssyr2::params& params, Ssyr2::score& score)
-            {
-                if (params.uplo == 1)
-                {
-                    score.uplo = 2.0f;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+namespace iclgpu { namespace functions { namespace implementations {
 
-            event Ssyr2_naive_lower::execute(const Ssyr2::params& params, const std::vector<event>& dep_events)
-            {
-                auto engine = context()->get_engine();
-                auto kernel = engine->get_kernel(kernel_name, module_name);
-
-                auto matrix_a_size = params.n * params.n;
-                auto vector_size = params.n;
-
-                //UPLO
-                kernel->set_arg(0, params.uplo);
-
-                //N
-                kernel->set_arg(1, params.n);
-
-                //Alpha
-                kernel->set_arg(2, params.alpha);
-
-                //Vector X
-                auto buf_vector_x = engine->get_input_buffer(params.x, vector_size);
-                kernel->set_arg(3, buf_vector_x);
-
-                //INCX
-                kernel->set_arg(4, params.incx);
-
-                //Vector Y
-                auto buf_vector_y = engine->get_input_buffer(params.y, vector_size);
-                kernel->set_arg(5, buf_vector_y);
-
-                //INCY
-                kernel->set_arg(6, params.incy);
-
-                //Matrix A
-                auto buf_matrix_a = engine->get_inout_buffer(params.A, matrix_a_size);
-                kernel->set_arg(7, buf_matrix_a);
-
-                //LDA
-                kernel->set_arg(8, params.lda);
-
-                //Local temp Buffers:
-
-                //TempMatrix1
-                auto TempMatrix1 = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(9, TempMatrix1);
-                //TempMatrix2
-                auto TempMatrix2 = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(10, TempMatrix2);
-                //TempMatrix
-                auto TempMatrix = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(11, TempMatrix);
-                //TempX
-                auto TempX = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(12, TempX);
-                //TempY
-                auto TempY = engine->get_temp_buffer(matrix_a_size * sizeof(float));
-                kernel->set_arg(13, TempY);
-
-                auto gws = nd_range(1);
-                auto lws = null_range;
-
-                kernel->set_options({ gws, lws });
-
-                return kernel->submit(dep_events);
-            }
-
-        }
+bool Ssyr2_naive_lower::accept(const Ssyr2::params& params, Ssyr2::score& score)
+{
+    if (params.uplo == ICLBLAS_FILL_MODE_LOWER)
+    {
+        score.uplo = 1.1f;
+        return true;
     }
-} // namespace iclgpu::functions::implementations
+    else
+    {
+        return false;
+    }
+}
+
+event Ssyr2_naive_lower::execute(const Ssyr2::params& params, const std::vector<event>& dep_events)
+{
+    auto engine = context()->get_engine();
+    auto kernel = engine->get_kernel(kernel_name, module_name);
+    size_t vector_size = params.n;
+    size_t matrix_size = params.n * params.lda;
+
+    kernel->set_arg(0, params.n);
+    kernel->set_arg(1, params.alpha);
+    auto buf_x = engine->get_input_buffer(params.x, vector_size * params.incx);
+    kernel->set_arg(2, buf_x);
+    kernel->set_arg(3, params.incx);
+    auto buf_y = engine->get_input_buffer(params.y, vector_size * params.incy);
+    kernel->set_arg(4, buf_y);
+    kernel->set_arg(5, params.incy);
+    auto buf_A = engine->get_inout_buffer(params.A, matrix_size);
+    kernel->set_arg(6, buf_A);
+    kernel->set_arg(7, params.lda);
+
+    auto gws = nd_range(1);
+    auto lws = null_range;
+    auto options = kernel_options(gws, lws);
+    kernel->set_options(options);
+
+    return kernel->submit(dep_events);
+}
+
+}}}

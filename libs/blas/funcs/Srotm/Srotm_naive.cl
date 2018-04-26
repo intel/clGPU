@@ -13,12 +13,38 @@
  * limitations under the License.
  */
 
-__kernel void Srotm_naive(int n, __global float* x, int incx, __global float* y, int incy, __global float* param)
+#include "Srotm_helpers.h"
+
+__kernel void Srotm_naive(uint n, __global float* x, uint incx, __global float* y, uint incy, __global float* param)
 {
-    for (int i = 0; i < n; i++)
+    if (param[0] == -1.f)
     {
-        float _x = param[1] * x[i * incx] + param[2] * y[i * incy];
-        y[i * incy] = param[3] * x[i * incx] + param[4] * y[i * incy];
-        x[i * incx] = _x;
+        for (uint i = 0; i < n; i++)
+        {
+            float this_x = x[i * incx];
+            float this_y = y[i * incy];
+
+            ROT_IMPL( ROT_FULL, x[i * incx], y[i * incy], this_x, this_y, param );
+        }
+    }
+    else if (param[0] == 0.f)
+    {
+        for (uint i = 0; i < n; i++)
+        {
+            float this_x = x[i * incx];
+            float this_y = y[i * incy];
+
+            ROT_IMPL( ROT_DIAGONAL_ONES, x[i * incx], y[i * incy], this_x, this_y, param );
+        }
+    }
+    else if (param[0] == 1.f)
+    {
+        for (uint i = 0; i < n; i++)
+        {
+            float this_x = x[i * incx];
+            float this_y = y[i * incy];
+
+            ROT_IMPL( ROT_ANTI_DIAGONAL_ONES, x[i * incx], y[i * incy], this_x, this_y, param );
+        }
     }
 }

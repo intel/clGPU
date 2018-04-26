@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Ctpmv, Ctpmv_up_diag_3x3)
 {
@@ -47,8 +48,7 @@ TEST(Ctpmv, Ctpmv_up_diag_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -84,8 +84,7 @@ TEST(Ctpmv, Ctpmv_low_diag_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -122,8 +121,7 @@ TEST(Ctpmv, Ctpmv_up_ndiag_4x4)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -160,8 +158,7 @@ TEST(Ctpmv, Ctpmv_low_ndiag_4x4)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -213,13 +210,11 @@ TEST(Ctpmv, Ctpmv_up_ndiag_nxn)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i].val[0] += x[k].val[0];
-                    ref_x[i].val[1] += x[k].val[1];
+                    ref_x[i] += x[k];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (ref_AP[i * n + k].val[0] * x[k * incx].val[0] - ref_AP[i * n + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_AP[i * n + k].val[0] * x[k * incx].val[1] + ref_AP[i * n + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += ref_AP[i * n + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -236,8 +231,7 @@ TEST(Ctpmv, Ctpmv_up_ndiag_nxn)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -289,13 +283,11 @@ TEST(Ctpmv, Ctpmv_low_ndiag_nxn)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i].val[0] += x[k].val[0];
-                    ref_x[i].val[1] += x[k].val[1];
+                    ref_x[i] += x[k];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (ref_AP[i * n + k].val[0] * x[k * incx].val[0] - ref_AP[i * n + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_AP[i * n + k].val[0] * x[k * incx].val[1] + ref_AP[i * n + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += ref_AP[i * n + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -312,8 +304,7 @@ TEST(Ctpmv, Ctpmv_low_ndiag_nxn)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -349,8 +340,7 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -399,13 +389,11 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_nxn)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i].val[0] += x[k].val[0];
-                    ref_x[i].val[1] += x[k].val[1]; 
+                    ref_x[i] += x[k];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (ref_AP[i * n + k].val[0] * x[k * incx].val[0] - ref_AP[i * n + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_AP[i * n + k].val[0] * x[k * incx].val[1] + ref_AP[i * n + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += ref_AP[i * n + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -422,8 +410,7 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_nxn)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -459,8 +446,7 @@ TEST(Ctpmv, Ctpmv_up_ndiag_trans_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -491,15 +477,11 @@ TEST(Ctpmv, Ctpmv_up_ndiag_trans_hermit_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i].val[0] += x[k].val[0];
-                    ref_x[i].val[1] += x[k].val[1];
+                    ref_x[i] += x[k];
                     continue;
                 }
 
-                ref_AP[i * n + k].val[1] *= (ref_AP[i * n + k].val[1] == 0.f) ? 1.f : -1.f;
-
-                ref_x[i * incx].val[0] += (ref_AP[i * n + k].val[0] * x[k * incx].val[0] - ref_AP[i * n + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_AP[i * n + k].val[0] * x[k * incx].val[1] + ref_AP[i * n + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += std::conj(ref_AP[i * n + k]) * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -516,8 +498,7 @@ TEST(Ctpmv, Ctpmv_up_ndiag_trans_hermit_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -535,7 +516,7 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_hermit_3x3)
                                     { 3.f, 15.f },{ 5.f, -1.5f },{ 6.f, 0.f } };
 
     oclComplex_t AP[(n*(n + 1)) / 2] = { { 1.f, 0.f },{ 2.f, -2.f },{ 3.f, -15.f },{ 4.f, 0.f },{ 5.f, -1.5f },{ 6.f, 0.f } };
-    
+
     oclComplex_t ref_x[n * incx];
     oclComplex_t x[n * incx] = { { 1.f, 0.f },{ 1.f, 0.f },{ 1.f, 0.f } };
 
@@ -548,15 +529,11 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_hermit_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i].val[0] += x[k].val[0];
-                    ref_x[i].val[1] += x[k].val[1];
+                    ref_x[i] += x[k];
                     continue;
                 }
 
-                ref_AP[i * n + k].val[1] *= (ref_AP[i * n + k].val[1] == 0.f) ? 1.f : -1.f;
-
-                ref_x[i * incx].val[0] += (ref_AP[i * n + k].val[0] * x[k * incx].val[0] - ref_AP[i * n + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_AP[i * n + k].val[0] * x[k * incx].val[1] + ref_AP[i * n + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += std::conj(ref_AP[i * n + k]) * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -573,7 +550,6 @@ TEST(Ctpmv, Ctpmv_low_ndiag_trans_hermit_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }

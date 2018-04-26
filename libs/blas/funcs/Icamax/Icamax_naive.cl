@@ -28,8 +28,8 @@ __kernel void Icamax_naive(int n, __global complex_t* x, int incx, __global int*
     for(uint i = 1; i<n; ++i)
     {
         iav_type element;
-        element.index = i * incx;
-        element.value = scabs1(x[element.index]);
+        element.index = i;
+        element.value = scabs1(x[element.index * incx]);
 
         if(element.value > lowest.value)
         {   

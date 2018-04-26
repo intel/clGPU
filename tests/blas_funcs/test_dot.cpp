@@ -25,22 +25,20 @@ namespace iclgpu { namespace tests {
 using ::testing::Combine;
 using ::testing::Values;
 
-template<>
-struct func_traits<iclgpu::functions::Sdot>
+template<typename _data_type, typename func_type, bool conj = false>
+struct dot_traits
 {
-    using data_type = float;
-    static void reference(iclgpu::functions::Sdot::params& params)
+    using data_type = _data_type;
+
+    static void reference(typename func_type::params& params)
     {
-        double result = 0;
-        for (int i = 0; i < params.n; i++)
-        {
-            const auto x = static_cast<double>(params.x[i * params.incx]);
-            const auto y = static_cast<double>(params.y[i * params.incy]);
-            result += x * y;
-        }
-        *params.result = static_cast<float>(result);
+        cpu_dot<data_type, conj>(params.n, params.x, params.incx, params.y, params.incy, params.result);
     }
 };
+
+template<>
+struct func_traits<iclgpu::functions::Sdot> : dot_traits<float, iclgpu::functions::Sdot>
+{};
 
 using test_Sdot = test_dot<iclgpu::functions::Sdot>;
 
@@ -75,21 +73,8 @@ INSTANTIATE_TEST_CASE_P(
 );
 
 template<>
-struct func_traits<iclgpu::functions::Cdotu>
-{
-    using data_type = iclgpu::complex_t;
-    static void reference(iclgpu::functions::Cdotu::params& params)
-    {
-        std::complex<double> result = 0;
-        for (int i = 0; i < params.n; i++)
-        {
-            const std::complex<double> x(params.x[i * params.incx]);
-            const std::complex<double> y(params.y[i * params.incy]);
-            result += x * y;
-        }
-        *params.result = static_cast<iclgpu::complex_t>(result);
-    }
-};
+struct func_traits<iclgpu::functions::Cdotu> : dot_traits<iclgpu::complex_t, iclgpu::functions::Cdotu>
+{};
 
 using test_Cdotu = test_dot<iclgpu::functions::Cdotu>;
 
@@ -112,22 +97,8 @@ INSTANTIATE_TEST_CASE_P(
 );
 
 template<>
-struct func_traits<iclgpu::functions::Cdotc>
-{
-    using data_type = iclgpu::complex_t;
-
-    static void reference(iclgpu::functions::Cdotc::params& params)
-    {
-        std::complex<double> result = 0;
-        for (int i = 0; i < params.n; i++)
-        {
-            const std::complex<double> x(params.x[i * params.incx]);
-            const std::complex<double> y(params.y[i * params.incy]);
-            result += conj(x) * y;
-        }
-        *params.result = static_cast<iclgpu::complex_t>(result);
-    }
-};
+struct func_traits<iclgpu::functions::Cdotc> : dot_traits<iclgpu::complex_t, iclgpu::functions::Cdotc, true>
+{};
 
 using test_Cdotc = test_dot<iclgpu::functions::Cdotc>;
 

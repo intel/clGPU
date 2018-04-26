@@ -23,22 +23,19 @@ namespace iclgpu { namespace tests {
 using ::testing::Combine;
 using ::testing::Values;
 
-template<>
-struct func_traits<iclgpu::functions::Saxpy>
+template<typename _data_type, typename func_type>
+struct axpy_traits
 {
-    using data_type = float;
-    static void reference(iclgpu::functions::Saxpy::params& params)
+    using data_type = _data_type;
+    static void reference(typename func_type::params& params)
     {
-        const auto alpha = static_cast<double>(params.alpha);
-        for (int i = 0; i < params.n; i++)
-        {
-            const auto x = static_cast<double>(params.x[i * params.incx]);
-            const auto y = static_cast<double>(params.y[i * params.incy]);
-            const auto res = y + alpha*x;
-            params.y[i*params.incy] = static_cast<float>(res);
-        }
+        cpu_axpy<data_type>(params.n, params.alpha, params.x, params.incx, params.y, params.incy);
     }
 };
+
+template<>
+struct func_traits<iclgpu::functions::Saxpy> : axpy_traits<float, iclgpu::functions::Saxpy>
+{};
 
 using test_Saxpy = test_axpy<iclgpu::functions::Saxpy>;
 
@@ -77,21 +74,8 @@ INSTANTIATE_TEST_CASE_P(
 //);
 
 template<>
-struct func_traits<iclgpu::functions::Caxpy>
-{
-    using data_type = iclgpu::complex_t;
-    static void reference(iclgpu::functions::Caxpy::params& params)
-    {
-        const auto alpha = static_cast<std::complex<double>>(params.alpha);
-        for (int i = 0; i < params.n; i++)
-        {
-            const auto x = static_cast<std::complex<double>>(params.x[i * params.incx]);
-            const auto y = static_cast<std::complex<double>>(params.y[i * params.incy]);
-            const auto res = y + alpha*x;
-            params.y[i*params.incy] = static_cast<iclgpu::complex_t>(res);
-        }
-    }
-};
+struct func_traits<iclgpu::functions::Caxpy> : axpy_traits<iclgpu::complex_t, iclgpu::functions::Caxpy>
+{};
 
 using test_Caxpy = test_axpy<iclgpu::functions::Caxpy>;
 

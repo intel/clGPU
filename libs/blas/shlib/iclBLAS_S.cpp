@@ -92,7 +92,7 @@ iclblasStatus_t iclblasSnrm2(iclblasHandle_t handle, int n, float * x, int incx,
     }
 
     return iclblas::exception_to_iclblas_status([=]() {
-        iclgpu::functions::Snrm2::params params = { result, n, x, incx };
+        iclgpu::functions::Snrm2::params params = { n, x, incx, result };
         iclblas::iclblasTemplate_impl<iclgpu::functions::Snrm2>(handle, params);
     });
 }
@@ -188,24 +188,11 @@ iclblasStatus_t iclblasSrot(iclblasHandle_t handle, int n, float* x, int incx, f
     });
 }
 
-// implement C API iclblasSrotm
 extern "C"
 iclblasStatus_t iclblasSrotm(iclblasHandle_t handle, int n, float* x, int incx, float* y, int incy, float* param)
 {
     if (n <= 0 || param[0] == -2.f)
         return ICLBLAS_STATUS_SUCCESS;
-
-    if (param[0] == 0.f)
-    {
-        param[1] = 1.f;
-        param[4] = 1.f;
-    }
-
-    if (param[0] == 1.f)
-    {
-        param[2] = 1.f;
-        param[3] = -1.f;
-    }
 
     return iclblas::exception_to_iclblas_status([=]() {
         iclgpu::functions::Srotm::params params = { n, x, incx, y, incy, param };

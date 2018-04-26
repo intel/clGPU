@@ -25,7 +25,7 @@ __kernel void Isamin_naive(int n, __global float* x, int incx, __global int* res
         if(current_value < lowest_value)
         {   
             lowest_value = current_value;
-            lowest_index = i * incx;
+            lowest_index = i;
         }
     }
 

@@ -43,7 +43,6 @@ event Cgeru_naive::execute(const Cgeru::params& params, const std::vector<event>
     kernel->set_arg(5, buf_a);
     kernel->set_arg(6, params.lda);
 
-
     auto gws = nd_range(params.m, params.n);
     auto lws = null_range;
 

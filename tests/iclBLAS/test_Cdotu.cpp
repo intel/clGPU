@@ -15,10 +15,7 @@
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
 #include <complex>
-
-#define EXPECT_OCLCOMPLEX_EQ(expected, result) \
-    EXPECT_FLOAT_EQ(expected.val[0], result.val[0]); \
-    EXPECT_FLOAT_EQ(expected.val[1], result.val[1])
+#include <gtest_utils.hpp>
 
 TEST(Cdotu, 11_noinc) {
     const int n = 11;
@@ -42,7 +39,7 @@ TEST(Cdotu, 11_noinc) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    EXPECT_OCLCOMPLEX_EQ(expected, result);
+    EXPECT_COMPLEX_EQ(expected, result);
 }
 
 TEST(Cdotu, 5_2inc) {
@@ -67,7 +64,7 @@ TEST(Cdotu, 5_2inc) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    EXPECT_OCLCOMPLEX_EQ(expected, result);
+    EXPECT_COMPLEX_EQ(expected, result);
 }
 
 TEST(Cdotu, 5_3incx) {
@@ -92,7 +89,7 @@ TEST(Cdotu, 5_3incx) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    EXPECT_OCLCOMPLEX_EQ(expected, result);
+    EXPECT_COMPLEX_EQ(expected, result);
 }
 
 TEST(Cdotu, 16_inc2) {

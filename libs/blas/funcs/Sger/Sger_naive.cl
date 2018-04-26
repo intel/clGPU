@@ -13,9 +13,14 @@
  * limitations under the License.
  */
 
-__kernel void Sger_naive(float alpha, __global float* x, int incx, __global float* y, int incy, __global float* a, int lda)
+__kernel void Sger_naive(float alpha, __global float* x, uint incx, __global float* y, uint incy, __global float* a, uint lda)
 {
-    int ind_x = get_global_id(0);
-    int ind_y = get_global_id(1);
-    a[ind_y*lda + ind_x] += alpha * x[ind_x*incx] * y[ind_y*incy];
+    const uint ind_m = get_global_id(0);
+    const uint ind_n = get_global_id(1);
+
+    const uint index_a = ind_n*lda + ind_m;
+    float this_a = a[index_a];
+    float prod = x[ind_m * incx] * y[ind_n * incy];
+    this_a = mad(alpha, prod, this_a);
+    a[index_a] = this_a;
 }

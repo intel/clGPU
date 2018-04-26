@@ -33,7 +33,6 @@ bool Sscal_noinc::accept(const Sscal::params & params, Sscal::score & score)
 
 event Sscal_noinc::execute(const Sscal::params & params, const std::vector<event>& dep_events)
 {
-    // Using functor template
     auto engine = context()->get_engine();
     auto kernel = engine->get_kernel(kernel_name, module_name);
 

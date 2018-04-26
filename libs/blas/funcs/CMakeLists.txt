@@ -1,36 +1,24 @@
 # Copyright (c) 2017-2018 Intel Corporation
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(TARGET_NAME "blas_funcs")
-
 set(MODULE_ID BLAS)
 
-set(CODEGEN_DIR      ${CMAKE_CURRENT_BINARY_DIR}/codegen)
-set(CODEGEN_INCDIR   ${CODEGEN_DIR}/include)
-set(CODEGEN_CACHEDIR ${CODEGEN_DIR}/cache)
 set(CODEGEN_TOOLSDIR ${ICLGPU__CORE_TOOLS_DIR})
-set(PRIMITIVE_DB_INC "ocl_kernels.inc")
-set(PRIMITIVE_DB_INC_SOURCE ${CODEGEN_INCDIR}/${PRIMITIVE_DB_INC})
+set(FUNCTIONS_DEF_FILE ${CMAKE_CURRENT_SOURCE_DIR}/functions.fdef)
 
-set(FUNCTIONS_DEF_FILE ${CMAKE_CURRENT_SOURCE_DIR}/functions.def)
-set(FUNCTIONS_DEF_CODEGEN ${CODEGEN_CACHEDIR}/functions.def)
-set(FUNCTIONS_INCDIR ${CODEGEN_INCDIR}/functions)
-
-set(ICLGPU__MODULE_ID                ${MODULE_ID}                PARENT_SCOPE)
-set(ICLGPU__${MODULE_ID}_NAME        ${TARGET_NAME}              PARENT_SCOPE)
-set(ICLGPU__${MODULE_ID}_SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-set(ICLGPU__${MODULE_ID}_INCLUDE_DIR ${CODEGEN_INCDIR}           PARENT_SCOPE)
+list(APPEND CMAKE_MODULE_PATH "${CODEGEN_TOOLSDIR}")
+include(Codegen)
 
 file(GLOB_RECURSE SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
@@ -46,59 +34,78 @@ file(GLOB_RECURSE KERNELS
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cl
 )
 
-if(CMAKE_VERSION VERSION_LESS 3.8)
-message(WARNING "CMAKE v.3.8 is recommended for friendly sources grouping in the project")
-source_group(functions FILES
-    ${SOURCES}
-    ${KERNELS}
-)
-else()
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX functions FILES
-    ${SOURCES}
-    ${KERNELS}
-)
-endif()
-
-source_group(codegen FILES ${PRIMITIVE_DB_INC_SOURCE} ${FUNCTIONS_DEF_CODEGEN})
-
-include_directories(
-    ${ICLGPU__CORE_INCLUDE_DIR}
-    ${CODEGEN_INCDIR}
-)
-
 add_library(${TARGET_NAME}
     STATIC
     ${SOURCES}
     ${HEADERS}
     ${KERNELS}
-    ${PRIMITIVE_DB_INC_SOURCE}
     ${FUNCTIONS_DEF_FILE}
-    ${FUNCTIONS_DEF_CODEGEN}
+)
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(${TARGET_NAME} ${ICLGPU__CORE_NAME})
-set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 14)
-set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD_REQUIRED)
-set_property(TARGET ${TARGET_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# =================================== Custom pre- and post-steps =======================================
-add_custom_command(OUTPUT ${FUNCTIONS_DEF_CODEGEN}
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${FUNCTIONS_INCDIR}"
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${FUNCTIONS_DEF_FILE} ${FUNCTIONS_DEF_CODEGEN}
-    COMMAND "${PYTHON_EXECUTABLE}" "${CODEGEN_TOOLSDIR}/functions_hpp_gen.py" "${FUNCTIONS_DEF_CODEGEN}" "${CMAKE_CURRENT_SOURCE_DIR}" "${FUNCTIONS_INCDIR}"
-    DEPENDS "${FUNCTIONS_DEF_FILE}" "${CODEGEN_TOOLSDIR}/functions_hpp_gen.py" "${CODEGEN_TOOLSDIR}/functions_def.py"
-    COMMENT "Generating functions codes..."
+set_target_properties(${TARGET_NAME} PROPERTIES
+    FOLDER ${TARGET_FOLDER_NAME}
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
 )
 
-add_custom_command(OUTPUT ${CODEGEN_CACHEDIR}/${PRIMITIVE_DB_INC}
-    COMMAND "${CMAKE_COMMAND}" -E make_directory ${CODEGEN_CACHEDIR}
-    COMMAND "${PYTHON_EXECUTABLE}" "${CODEGEN_TOOLSDIR}/primitive_db_gen.py" "${CODEGEN_CACHEDIR}/${PRIMITIVE_DB_INC}" "${CMAKE_CURRENT_SOURCE_DIR}"
-    DEPENDS ${KERNELS} ${CODEGEN_TOOLSDIR}/primitive_db_gen.py
-    COMMENT "Generating ${PRIMITIVE_DB_INC} ..."
+# ======================== Autogenerate functions sources =====================
+add_codegen_functions(${FUNCTIONS_DEF_FILE})
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC ${CODEGEN_INCDIR}
 )
 
-add_custom_command(OUTPUT ${PRIMITIVE_DB_INC_SOURCE}
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CODEGEN_CACHEDIR}/${PRIMITIVE_DB_INC}" "${PRIMITIVE_DB_INC_SOURCE}"
-    DEPENDS ${CODEGEN_CACHEDIR}/${PRIMITIVE_DB_INC} ${KERNELS} ${CODEGEN_TOOLSDIR}/primitive_db_gen.py
-    COMMENT "Updating file if the file changed (${PRIMITIVE_DB_INC}) ..."
+target_sources(${TARGET_NAME}
+    PRIVATE ${FUNCTION_SOURCES}
 )
+
+if(CMAKE_VERSION VERSION_LESS 3.8)
+    message(WARNING "CMAKE v.3.8 is recommended for friendly sources grouping in the project")
+    source_group(functions
+        FILES ${FUNCTION_SOURCES} ${KERNELS} ${FUNCTIONS_DEF_FILE}
+    )
+else()
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}
+        PREFIX functions
+        FILES ${FUNCTION_SOURCES} ${KERNELS} ${FUNCTIONS_DEF_FILE}
+    )
+endif()
+
+# ======================== Autogenerate kernels DB ============================
+add_codegen_kernels_db("blas")
+
+set_target_properties(${CODEGEN_TARGET_NAME} PROPERTIES
+    FOLDER ${TARGET_FOLDER_NAME}
+)
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC ${CODEGEN_INCDIR}
+)
+
+target_sources(${TARGET_NAME}
+    PRIVATE "${CODEGEN_INCDIR}/${KERNELS_DB_INC}"
+)
+
+set_source_files_properties("${CODEGEN_INCDIR}/${KERNELS_DB_INC}" PROPERTIES
+    GENERATED TRUE
+)
+source_group(codegen FILES "${CODEGEN_INCDIR}/${KERNELS_DB_INC}")
+
+target_compile_definitions(${TARGET_NAME}
+    PUBLIC BLAS_OCL_KERNELS_DB="${KERNELS_DB_INC}"
+)
+
+add_dependencies(${TARGET_NAME} ${CODEGEN_TARGET_NAME})
+
+# ======================== Export module info =================================
+set(MODULE_IDS                       ${MODULE_ID}                PARENT_SCOPE)
+set(ICLGPU__${MODULE_ID}_NAME        ${TARGET_NAME}              PARENT_SCOPE)
+set(ICLGPU__${MODULE_ID}_SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+set(ICLGPU__${MODULE_ID}_INCLUDE_DIR ${CODEGEN_INCDIR}           PARENT_SCOPE)

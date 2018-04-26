@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Ccopy, n11_noinc)
 {
@@ -44,8 +45,7 @@ TEST(Ccopy, n11_noinc)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[0], y[i * incy].val[0]);
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[1], y[i * incy].val[1]);
+        EXPECT_COMPLEX_EQ(ref_y[i * incy], y[i * incy]);
     }
 }
 
@@ -79,8 +79,7 @@ TEST(Ccopy, n_noinc)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[0], y[i * incy].val[0]);
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[1], y[i * incy].val[1]);
+        EXPECT_COMPLEX_EQ(ref_y[i * incy], y[i * incy]);
     }
 }
 
@@ -114,7 +113,6 @@ TEST(Ccopy, n_inc)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[0], y[i * incy].val[0]);
-        EXPECT_FLOAT_EQ(ref_y[i * incy].val[1], y[i * incy].val[1]);
+        EXPECT_COMPLEX_EQ(ref_y[i * incy], y[i * incy]);
     }
 }

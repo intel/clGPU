@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-__kernel void Sscal_naive(float alpha, __global float* x, int incx)
+__kernel void Sscal_naive(float alpha, __global float* x, uint incx)
 {
-   int gid = get_global_id(0);
+   const uint gid = get_global_id(0);
    x[gid * incx] *= alpha;
 }

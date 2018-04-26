@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -98,8 +98,7 @@ iclblasStatus_t iclblasCswap(iclblasHandle_t handle, int n, oclComplex_t * x, in
 extern "C"
 iclblasStatus_t iclblasCdotu(iclblasHandle_t handle, int n, oclComplex_t* x, int incx, oclComplex_t* y, int incy, oclComplex_t* result) {
     if (n <= 0) {
-        result->val[0] = 0.f;
-        result->val[1] = 0.f;
+        *result = 0.f;
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -127,7 +126,7 @@ iclblasStatus_t iclblasScnrm2(iclblasHandle_t handle, int n, oclComplex_t* x, in
         *result = 0;
         return ICLBLAS_STATUS_SUCCESS;
     }
-    
+
     return iclblas::exception_to_iclblas_status([=]() {
         iclgpu::functions::Scnrm2::params params = { n, iclblas::complex_cast(x), incx, result };
         iclblas::iclblasTemplate_impl<iclgpu::functions::Scnrm2>(handle, params);
@@ -167,7 +166,7 @@ iclblasStatus_t iclblasIcamin(iclblasHandle_t handle, int n, oclComplex_t* x, in
 
 extern "C"
 iclblasStatus_t iclblasCaxpy(iclblasHandle_t handle, int n, const oclComplex_t* alpha, oclComplex_t* x, int incx, oclComplex_t* y, int incy) {
-    if (n <= 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f)) {
+    if (n <= 0 || *alpha == 0.f) {
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -190,7 +189,7 @@ iclblasStatus_t iclblasCrotg(iclblasHandle_t handle, oclComplex_t* a, oclComplex
 extern "C"
 iclblasStatus_t iclblasCgbmv(iclblasHandle_t handle, iclblasOperation_t trans, int m, int n, int kl, int ku, const oclComplex_t* alpha, oclComplex_t * A, int lda, oclComplex_t * x, int incx, const oclComplex_t* beta, oclComplex_t * y, int incy)
 {
-    if (m == 0 || n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f))
+    if (m == 0 || n == 0 || (*alpha == 0.f && *beta == 1.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     if (m < 0 || n < 0 || incx == 0 || incy == 0)
@@ -206,7 +205,7 @@ iclblasStatus_t iclblasCgbmv(iclblasHandle_t handle, iclblasOperation_t trans, i
 extern "C"
 iclblasStatus_t iclblasCgeru(iclblasHandle_t handle, int m, int n, const oclComplex_t* alpha, oclComplex_t * x, int incx, oclComplex_t * y, int incy, oclComplex_t * A, int lda)
 {
-    if (m == 0 || n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f))
+    if (m == 0 || n == 0 || *alpha == 0.f )
         return ICLBLAS_STATUS_SUCCESS;
 
     if (m < 0 || n < 0 || incx == 0)
@@ -221,7 +220,7 @@ iclblasStatus_t iclblasCgeru(iclblasHandle_t handle, int m, int n, const oclComp
 extern "C"
 iclblasStatus_t iclblasCgerc(iclblasHandle_t handle, int m, int n, const oclComplex_t* alpha, oclComplex_t * x, int incx, oclComplex_t * y, int incy, oclComplex_t * A, int lda)
 {
-    if (m == 0 || n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f))
+    if (m == 0 || n == 0 || *alpha == 0.f )
         return ICLBLAS_STATUS_SUCCESS;
 
     if (m < 0 || n < 0 || incx == 0)
@@ -236,7 +235,7 @@ iclblasStatus_t iclblasCgerc(iclblasHandle_t handle, int m, int n, const oclComp
 extern "C"
 iclblasStatus_t iclblasCgemv(iclblasHandle_t handle, iclblasOperation_t trans, int m, int n, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* x, int incx, const oclComplex_t* beta, oclComplex_t* y, int incy)
 {
-    if (m == 0 || n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f))
+    if (m == 0 || n == 0 || (*alpha == 0.f && *beta == 1.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     if (m < 0 || n < 0 || incx == 0 || incy == 0)
@@ -266,7 +265,7 @@ iclblasStatus_t iclblasCher(iclblasHandle_t handle, iclblasFillMode_t uplo, int 
 extern "C"
 iclblasStatus_t iclblasChemv(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* x, int incx, const oclComplex_t* beta, oclComplex_t* y, int incy)
 {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f))
+    if (n == 0 || (*alpha == 0.f && *beta == 1.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || incx == 0 || incy == 0)
@@ -297,8 +296,7 @@ iclblasStatus_t iclblasCtrmv(iclblasHandle_t handle, iclblasFillMode_t uplo, icl
 extern "C"
 iclblasStatus_t iclblasCdotc(iclblasHandle_t handle, int n, oclComplex_t* x, int incx, oclComplex_t* y, int incy, oclComplex_t* result) {
     if (n <= 0) {
-        result->val[0] = 0.f;
-        result->val[1] = 0.f;
+        *result = 0.f;
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -312,7 +310,7 @@ iclblasStatus_t iclblasCdotc(iclblasHandle_t handle, int n, oclComplex_t* x, int
 extern "C"
 iclblasStatus_t iclblasCrot(iclblasHandle_t handle, int n, oclComplex_t* x, int incx, oclComplex_t* y, int incy, const float* c, const oclComplex_t* s)
 {
-    if (n <= 0 || (*c == 1 && (s->val[0] == 0 && s->val[1] == 0)))
+    if (n <= 0 || (*c == 1 && *s == 0.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     return iclblas::exception_to_iclblas_status([=]() {
@@ -337,7 +335,7 @@ iclblasStatus_t iclblasCsrot(iclblasHandle_t handle, int n, oclComplex_t* x, int
 extern "C"
 iclblasStatus_t iclblasCher2(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, const oclComplex_t* alpha, oclComplex_t* x, int incx, oclComplex_t* y, int incy, oclComplex_t* A, int lda)
 {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f))
+    if (n == 0 || *alpha == 0.f )
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || incx == 0 || incy == 0)
@@ -352,7 +350,7 @@ iclblasStatus_t iclblasCher2(iclblasHandle_t handle, iclblasFillMode_t uplo, int
 extern "C"
 iclblasStatus_t iclblasChpmv(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, const oclComplex_t* alpha, oclComplex_t* AP, oclComplex_t* x, int incx, const oclComplex_t* beta, oclComplex_t* y, int incy)
 {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f))
+    if (n == 0 || (*alpha == 0.f && *beta == 1.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || incx == 0 || incy == 0)
@@ -383,7 +381,7 @@ iclblasStatus_t iclblasChpr(iclblasHandle_t handle, iclblasFillMode_t uplo, int 
 extern "C"
 iclblasStatus_t iclblasChpr2(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, const oclComplex_t* alpha, oclComplex_t* x, int incx, oclComplex_t* y, int incy, oclComplex_t* AP)
 {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f))
+    if (n == 0 || *alpha == 0.f )
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || incx == 0 || incy == 0)
@@ -472,7 +470,7 @@ iclblasStatus_t iclblasCgemm(iclblasHandle_t handle, iclblasOperation_t transa, 
 
 extern "C"
 iclblasStatus_t iclblasCsymm(iclblasHandle_t handle, iclblasSideMode_t side, iclblasFillMode_t uplo, int m, int n, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* B, int ldb, const oclComplex_t* beta, oclComplex_t* C, int ldc) {
-    if (n == 0 || m == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f)) {
+    if (n == 0 || m == 0 || (*alpha == 0.f && *beta == 1.f)) {
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -485,7 +483,7 @@ iclblasStatus_t iclblasCsymm(iclblasHandle_t handle, iclblasSideMode_t side, icl
 
 extern "C"
 iclblasStatus_t iclblasCsyr2k(iclblasHandle_t handle, iclblasFillMode_t uplo, iclblasOperation_t trans, int n, int k, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* B, int ldb, const oclComplex_t* beta, oclComplex_t* C, int ldc) {
-    if (n == 0 || k == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f)) {
+    if (n == 0 || k == 0 || (*alpha == 0.f && *beta == 1.f)) {
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -498,7 +496,7 @@ iclblasStatus_t iclblasCsyr2k(iclblasHandle_t handle, iclblasFillMode_t uplo, ic
 
 extern "C"
 iclblasStatus_t iclblasCsyrk(iclblasHandle_t handle, iclblasFillMode_t uplo, iclblasOperation_t trans, int n, int k, const oclComplex_t* alpha, oclComplex_t* A, int lda, const oclComplex_t* beta, oclComplex_t* C, int ldc) {
-    if (n == 0 || k == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f)) {
+    if (n == 0 || k == 0 || (*alpha == 0.f && *beta == 1.f)) {
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -542,7 +540,7 @@ iclblasStatus_t iclblasCherk(iclblasHandle_t handle, iclblasFillMode_t uplo, icl
 {
     if (n < 0 || k < 0)
         return ICLBLAS_STATUS_INVALID_VALUE;
-    
+
     return iclblas::exception_to_iclblas_status([=]() {
         iclgpu::functions::Cherk::params params = { uplo, trans, n, k, *alpha, iclblas::complex_cast(A), lda, *beta, iclblas::complex_cast(C), ldc };
         iclblas::iclblasTemplate_impl<iclgpu::functions::Cherk>(handle, params);
@@ -555,7 +553,7 @@ iclblasStatus_t iclblasCher2k(iclblasHandle_t handle, iclblasFillMode_t uplo, ic
 {
     if (n < 0 || k < 0)
         return ICLBLAS_STATUS_INVALID_VALUE;
-    
+
     return iclblas::exception_to_iclblas_status([=]() {
         iclgpu::functions::Cher2k::params params = { uplo, trans, n, k, iclblas::complex_cast(*alpha), iclblas::complex_cast(A), lda, iclblas::complex_cast(B), ldb, *beta, iclblas::complex_cast(C), ldc };
         iclblas::iclblasTemplate_impl<iclgpu::functions::Cher2k>(handle, params);
@@ -569,7 +567,7 @@ iclblasStatus_t iclblasCtrmm(iclblasHandle_t handle, iclblasSideMode_t side, icl
 {
     if (n <= 0 || m <= 0 || (uplo != 0 && uplo != 1))
         return ICLBLAS_STATUS_SUCCESS;
-    
+
     return iclblas::exception_to_iclblas_status([=]() {
         iclgpu::functions::Ctrmm::params params = { side, uplo, transa, diag, m, n, iclblas::complex_cast(*alpha), iclblas::complex_cast(A), lda, iclblas::complex_cast(B), ldb, iclblas::complex_cast(C), ldc };
         iclblas::iclblasTemplate_impl<iclgpu::functions::Ctrmm>(handle, params);
@@ -578,7 +576,7 @@ iclblasStatus_t iclblasCtrmm(iclblasHandle_t handle, iclblasSideMode_t side, icl
 
 extern "C"
 iclblasStatus_t iclblasChemm(iclblasHandle_t handle, iclblasSideMode_t side, iclblasFillMode_t uplo, int m, int n, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* B, int ldb, const oclComplex_t* beta, oclComplex_t* C, int ldc) {
-    if (m == 0 || n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f)) {
+    if (m == 0 || n == 0 || (*alpha == 0.f && *beta == 1.f)) {
         return ICLBLAS_STATUS_SUCCESS;
     }
 
@@ -592,7 +590,7 @@ iclblasStatus_t iclblasChemm(iclblasHandle_t handle, iclblasSideMode_t side, icl
 extern "C"
 iclblasStatus_t iclblasChbmv(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, int k, const oclComplex_t* alpha, oclComplex_t* A, int lda, oclComplex_t* x, int incx, const oclComplex_t* beta, oclComplex_t* y, int incy)
 {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f && beta->val[0] == 1.f && beta->val[1] == 0.f))
+    if (n == 0 || (*alpha == 0.f && *beta == 1.f))
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || k < 0 || incx == 0 || incy == 0)
@@ -606,7 +604,7 @@ iclblasStatus_t iclblasChbmv(iclblasHandle_t handle, iclblasFillMode_t uplo, int
 
 extern "C"
 iclblasStatus_t iclblasCsyr(iclblasHandle_t handle, iclblasFillMode_t uplo, int n, const oclComplex_t* alpha, oclComplex_t* x, int incx, oclComplex_t* A, int lda) {
-    if (n == 0 || (alpha->val[0] == 0.f && alpha->val[1] == 0.f))
+    if (n == 0 || *alpha == 0.f)
         return ICLBLAS_STATUS_SUCCESS;
 
     if (n < 0 || incx == 0)

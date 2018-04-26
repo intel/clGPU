@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #pragma once
-#include "engine.hpp"
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 #define CL_HPP_ENABLE_EXCEPTIONS
 #define CL_HPP_MINIMUM_OPENCL_VERSION 120
@@ -25,15 +25,20 @@
 namespace iclgpu
 {
 class ocl_engine;
+class primitive_db;
+class ocl_primitive_db;
 
 class ocl_toolkit
 {
 public:
     ocl_toolkit(ocl_engine* engine);
+    ~ocl_toolkit(); // -required because ocl_primitive_db is incomplete type
     const cl::Context& get_cl_context() const;
     cl::CommandQueue& get_cl_queue(const command_queue& queue = default_queue);
     static cl::Device get_gpu_device();
+    cl::Program build_program(const std::string& module_name);
     const cl::Program& get_module(const std::string& module_name);
+    primitive_db* get_primitive_db() const;
 
 private:
     ocl_engine*                                  _engine;
@@ -41,6 +46,7 @@ private:
     cl::Context                                  _ocl_context;
     std::vector<cl::CommandQueue>                _queues;
     std::unordered_map<std::string, cl::Program> _programs;
+    std::unique_ptr<ocl_primitive_db>            _primitive_db;
 };
 
 }

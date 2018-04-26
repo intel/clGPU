@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
-#include <iostream>
+#include <gtest_utils.hpp>
 
 TEST(Ctrmv, Ctrmv_up_ndiag_3x3)
 {
@@ -43,13 +43,11 @@ TEST(Ctrmv, Ctrmv_up_ndiag_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1];
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -66,8 +64,7 @@ TEST(Ctrmv, Ctrmv_up_ndiag_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -99,13 +96,11 @@ TEST(Ctrmv, Ctrmv_up_diag_4x4)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1];
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -122,8 +117,7 @@ TEST(Ctrmv, Ctrmv_up_diag_4x4)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -154,13 +148,11 @@ TEST(Ctrmv, Ctrmv_low_diag_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1];
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -177,8 +169,7 @@ TEST(Ctrmv, Ctrmv_low_diag_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -208,13 +199,11 @@ TEST(Ctrmv, Ctrmv_low_ndiag_2x2)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1]; 
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -231,8 +220,7 @@ TEST(Ctrmv, Ctrmv_low_ndiag_2x2)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -263,13 +251,11 @@ TEST(Ctrmv, Ctrmv_low_ndiag_trans_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1]; 
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -286,8 +272,7 @@ TEST(Ctrmv, Ctrmv_low_ndiag_trans_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -319,13 +304,11 @@ TEST(Ctrmv, Ctrmv_up_diag_trans_4x4)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1]; 
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_x[i * incx].val[0] += (A[i * lda + k].val[0] * x[k * incx].val[0] - A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (A[i * lda + k].val[0] * x[k * incx].val[1] + A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += A[i * lda + k] * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -342,8 +325,7 @@ TEST(Ctrmv, Ctrmv_up_diag_trans_4x4)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -379,15 +361,11 @@ TEST(Ctrmv, Ctrmv_low_ndiag_trans_hermit_3x3)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1];
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_A[i * lda + k].val[1] *= ref_A[i * lda + k].val[1] == 0.f ? (1.f) : (-1.f);
-
-                ref_x[i * incx].val[0] += (ref_A[i * lda + k].val[0] * x[k * incx].val[0] - ref_A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_A[i * lda + k].val[0] * x[k * incx].val[1] + ref_A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += std::conj(ref_A[i * lda + k]) * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -404,8 +382,7 @@ TEST(Ctrmv, Ctrmv_low_ndiag_trans_hermit_3x3)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -443,15 +420,11 @@ TEST(Ctrmv, Ctrmv_up_diag_trans_hermit_4x4)
             {
                 if (k == i && (diag == ICLBLAS_DIAG_UNIT))
                 {
-                    ref_x[i * incx].val[0] += x[k * incx].val[0];
-                    ref_x[i * incx].val[1] += x[k * incx].val[1];
+                    ref_x[i * incx] += x[k * incx];
                     continue;
                 }
 
-                ref_A[i * lda + k].val[1] *= ref_A[i * lda + k].val[1] == 0.f ? (1.f) : (-1.f);
-
-                ref_x[i * incx].val[0] += (ref_A[i * lda + k].val[0] * x[k * incx].val[0] - ref_A[i * lda + k].val[1] * x[k * incx].val[1]);
-                ref_x[i * incx].val[1] += (ref_A[i * lda + k].val[0] * x[k * incx].val[1] + ref_A[i * lda + k].val[1] * x[k * incx].val[0]);
+                ref_x[i * incx] += std::conj(ref_A[i * lda + k]) * x[k * incx];
             }
 
     iclblasHandle_t handle;
@@ -468,7 +441,6 @@ TEST(Ctrmv, Ctrmv_up_diag_trans_hermit_4x4)
 
     for (int i = 0; i < n; i++)
     {
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        ASSERT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        ASSERT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }

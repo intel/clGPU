@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
 
-TEST(Srotm, Srotm_n11)
+TEST(Srotm, n11)
 {
     const int n = 11;
     const int incx = 1;
@@ -55,7 +55,7 @@ TEST(Srotm, Srotm_n11)
     }
 }
 
-TEST(Srotm, Srotm_inc2)
+TEST(Srotm, inc2)
 {
     const int n = 5;
     const int incx = 2;
@@ -98,5 +98,128 @@ TEST(Srotm, Srotm_inc2)
     {
         EXPECT_FLOAT_EQ(refx[i], x[i]);
         EXPECT_FLOAT_EQ(refy[i], y[i]);
+    }
+}
+
+TEST(Srotm, 11_incx1) {
+    const int n = 11;
+    const int incx = 1;
+    const int incy = 2;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = 1.f * i;
+    }
+    std::vector<float> y(n*incy);
+    for (int i = 0; i < n; i++) {
+        y[i*incy] = 1.f * n - i;
+    }
+    float param[5] = { -1.f, -1.f, 3.f, 4.f, 1.f };
+
+    auto expected_x = x;
+    auto expected_y = y;
+    for (int i = 0; i < n; i++) {
+        expected_x[i*incx] = param[1] * x[i*incx] + param[2] * y[i*incy];
+        expected_y[i*incy] = param[3] * x[i*incx] + param[4] * y[i*incy];
+    }
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasSrotm(handle, n, x.data(), incx, y.data(), incy, param);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*incx; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_x[i], x[i]);
+    }
+    for (int i = 0; i < n*incy; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_y[i], y[i]);
+    }
+}
+
+TEST(Srotm, 11_incy1) {
+    const int n = 11;
+    const int incx = 2;
+    const int incy = 1;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = 1.f * i;
+    }
+    std::vector<float> y(n*incy);
+    for (int i = 0; i < n; i++) {
+        y[i*incy] = 1.f * n - i;
+    }
+    float param[5] = { -1.f, -1.f, 3.f, 4.f, 1.f };
+
+    auto expected_x = x;
+    auto expected_y = y;
+    for (int i = 0; i < n; i++) {
+        expected_x[i*incx] = param[1] * x[i*incx] + param[2] * y[i*incy];
+        expected_y[i*incy] = param[3] * x[i*incx] + param[4] * y[i*incy];
+    }
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasSrotm(handle, n, x.data(), incx, y.data(), incy, param);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*incx; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_x[i], x[i]);
+    }
+    for (int i = 0; i < n*incy; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_y[i], y[i]);
+    }
+}
+
+TEST(Srotm, 11_incs1) {
+    const int n = 11;
+    const int incx = 1;
+    const int incy = 1;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = 1.f * i;
+    }
+    std::vector<float> y(n*incy);
+    for (int i = 0; i < n; i++) {
+        y[i*incy] = 1.f * n - i;
+    }
+    float param[5] = { -1.f, -1.f, 3.f, 4.f, 1.f };
+
+    auto expected_x = x;
+    auto expected_y = y;
+    for (int i = 0; i < n; i++) {
+        expected_x[i*incx] = param[1] * x[i*incx] + param[2] * y[i*incy];
+        expected_y[i*incy] = param[3] * x[i*incx] + param[4] * y[i*incy];
+    }
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasSrotm(handle, n, x.data(), incx, y.data(), incy, param);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*incx; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_x[i], x[i]);
+    }
+    for (int i = 0; i < n*incy; i++)
+    {
+        EXPECT_FLOAT_EQ(expected_y[i], y[i]);
     }
 }

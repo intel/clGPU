@@ -13,9 +13,19 @@
  * limitations under the License.
  */
 
-__kernel void Cgeru_naive(complex_t alpha, __global complex_t* x, int incx, __global complex_t* y, int incy, __global complex_t* a, int lda)
+#define IDX(m, n, ld) ((n)*(ld) + (m))
+
+__kernel void Cgeru_naive(complex_t alpha, __global complex_t* x, uint incx, __global complex_t* y, uint incy, __global complex_t* a, uint lda)
 {
-    int ind_x = get_global_id(0);
-    int ind_y = get_global_id(1);
-    a[ind_y*lda + ind_x] += cmul(alpha, cmul(x[ind_x*incx], y[ind_y*incy]));
+    const uint ind_m = get_global_id(0);
+    const uint ind_n = get_global_id(1);
+
+    uint index_a = IDX(ind_m, ind_n, lda);
+
+    complex_t this_a = a[index_a];
+    complex_t left_x = x[ind_m * incx];
+    complex_t right_y = y[ind_n * incy];
+
+    this_a += cmul(alpha, cmul(left_x, right_y));
+    a[index_a] = this_a;
 }

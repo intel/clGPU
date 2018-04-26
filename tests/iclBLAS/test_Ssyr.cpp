@@ -15,8 +15,29 @@
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
 
+#define IDX(m, n, ld) (n)*(ld) + (m)
 
-TEST(Ssyr, naive_6x5_up) {
+std::vector<float> cpuSsyr_upper(const int n, const float alpha, const std::vector<float> x, const int incx,const std::vector<float> a, const int lda) {
+    std::vector<float> result = a;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            result[IDX(j, i, lda)] += alpha * x[j * incx] * x[i * incx];
+        }
+    }
+    return result;
+}
+
+std::vector<float> cpuSsyr_lower(const int n, const float alpha, const std::vector<float> x, const int incx, const std::vector<float> a, const int lda) {
+    std::vector<float> result = a;
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            result[IDX(j, i, lda)] += alpha * x[j * incx] * x[i * incx];
+        }
+    }
+    return result;
+}
+
+TEST(Ssyr, 6x5_up_incx1) {
     const auto uplo = ICLBLAS_FILL_MODE_UPPER;
     const int n = 5;
     const int lda = 6;
@@ -50,7 +71,7 @@ TEST(Ssyr, naive_6x5_up) {
     }
 }
 
-TEST(Ssyr, naive_5x5_low) {
+TEST(Ssyr, 5x5_low_incx1) {
     const auto uplo = ICLBLAS_FILL_MODE_LOWER;
     const int n = 5;
     const int lda = 5;
@@ -84,7 +105,7 @@ TEST(Ssyr, naive_5x5_low) {
     }
 }
 
-TEST(Ssyr, naive_3x3_low_inc2) {
+TEST(Ssyr, 3x3_low_incx2) {
     const auto uplo = ICLBLAS_FILL_MODE_LOWER;
     const int n = 3;
     const int lda = 3;
@@ -109,6 +130,222 @@ TEST(Ssyr, naive_3x3_low_inc2) {
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
     for (int i = 0; i < n*lda; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 17x17_up_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 17;
+    const int lda = n;
+    const int incx = 2;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 17x17_up_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 17;
+    const int lda = n;
+    const int incx = 1;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < lda * n; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 17x17_low_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 17;
+    const int lda = n;
+    const int incx = 2;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 17x17_low_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 17;
+    const int lda = n;
+    const int incx = 1;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 72x71_up_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 71;
+    const int lda = 72;
+    const int incx = 2;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < lda * n; ++i)
+    {
+        EXPECT_FLOAT_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Ssyr, 72x71_low_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 71;
+    const int lda = 72;
+    const int incx = 2;
+    float alpha = 1.1f;
+
+    std::vector<float> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i * incx] = 1.f * i;
+    }
+    std::vector<float> a(n*lda);
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            a[i*lda + j] = 1.f * i*lda + j;
+        }
+    }
+
+    std::vector<float> expected = cpuSsyr_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasSsyr(handle, uplo, n, &alpha, x.data(), incx, a.data(), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < lda * n; ++i)
     {
         EXPECT_FLOAT_EQ(expected[i], a[i]);
     }

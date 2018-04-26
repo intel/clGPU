@@ -24,6 +24,8 @@
 
 namespace iclgpu
 {
+class primitive_db;
+
 template <class T, class U>
 auto down_pointer_cast(const std::shared_ptr<U>& r)
 -> typename std::enable_if<std::is_base_of<U, T>::value && !std::is_same<U, T>::value, std::shared_ptr<T>>::type
@@ -350,6 +352,9 @@ template <typename ElemTy, direction Dir> class blob;
 struct engine
 {
     virtual ~engine() = default;
+
+    /// @brief Return engine-specific kernels DB
+    virtual primitive_db* get_primitive_db() = 0;
 
     /// @brief Create kernel command
     /// @param name Kernel name

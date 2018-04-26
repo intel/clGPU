@@ -29,14 +29,15 @@ event Srotm_naive::execute(const Srotm::params& params, const std::vector<event>
     auto engine = context()->get_engine();
     auto kernel = engine->get_kernel(kernel_name, module_name);
     
-    auto buf_size = (params.incx <= params.incy) ? params.n * params.incx : params.n * params.incy;
+    auto x_buf_size = params.n * params.incx;
+    auto y_buf_size = params.n * params.incy;
     auto param_size = 5;
 
     kernel->set_arg(0, params.n);
-    auto buf_x = engine->get_inout_buffer(params.x, buf_size);
+    auto buf_x = engine->get_inout_buffer(params.x, x_buf_size);
     kernel->set_arg(1, buf_x);
     kernel->set_arg(2, params.incx);
-    auto buf_y = engine->get_inout_buffer(params.y, buf_size);
+    auto buf_y = engine->get_inout_buffer(params.y, y_buf_size);
     kernel->set_arg(3, buf_y);
     kernel->set_arg(4, params.incy);
     auto buf_param = engine->get_input_buffer(params.param, param_size);

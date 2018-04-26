@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Cgemm, ntransAB_3x3)
 {
@@ -56,8 +57,7 @@ TEST(Cgemm, ntransAB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -98,12 +98,11 @@ TEST(Cgemm, transAB_3x3)
 
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
-    
+
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -148,8 +147,7 @@ TEST(Cgemm, ntransA_transB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -194,8 +192,7 @@ TEST(Cgemm, transA_ntransB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -240,14 +237,8 @@ TEST(Cgemm, ntransAB_ldx_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
-}
-
-oclComplex_t cmul(oclComplex_t a, oclComplex_t b)
-{
-    return { a.val[0] * b.val[0] - a.val[1] * b.val[1], a.val[0] * b.val[1] + a.val[1] * b.val[0] };
 }
 
 TEST(Cgemm, hermitAB_3x3)
@@ -282,21 +273,15 @@ TEST(Cgemm, hermitAB_3x3)
 
             for (int l = 0; l < k; l++)
             {
-                oclComplex_t tmp = cmul
-                                    (
-                                    { A[i * lda + l].val[0], -1.f * A[i * lda + l].val[1] },
-                                    { B[l * ldb + j].val[0], -1.f * B[l * ldb + j].val[1] }
-                                    );
+                oclComplex_t tmp = std::conj(A[i * lda + l]) * std::conj(B[l * ldb + j]);
 
-                value.val[0] += tmp.val[0];
-                value.val[1] += tmp.val[1];
+                value += tmp;
             }
 
-            oclComplex_t tmp1 = cmul(alpha, value);
-            oclComplex_t tmp2 = cmul(beta, C[j * ldc + i]);
+            oclComplex_t tmp1 = alpha * value;
+            oclComplex_t tmp2 = beta * C[j * ldc + i];
 
-            ref_C[j * ldc + i].val[0] = tmp1.val[0] + tmp2.val[0];
-            ref_C[j * ldc + i].val[1] = tmp1.val[1] + tmp2.val[1];
+            ref_C[j * ldc + i] = tmp1 + tmp2;
         }
     }
 
@@ -315,8 +300,7 @@ TEST(Cgemm, hermitAB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -352,17 +336,15 @@ TEST(Cgemm, hermitA_ntransB_3x3)
 
             for (int l = 0; l < k; l++)
             {
-                oclComplex_t tmp = cmul({ A[i * lda + l].val[0], -1.f * A[i * lda + l].val[1] }, B[j * ldb + l]);
+                oclComplex_t tmp = std::conj(A[i * lda + l]) * B[j * ldb + l];
 
-                value.val[0] += tmp.val[0];
-                value.val[1] += tmp.val[1];
+                value += tmp;
             }
 
-            oclComplex_t tmp1 = cmul(alpha, value);
-            oclComplex_t tmp2 = cmul(beta, C[j * ldc + i]);
+            oclComplex_t tmp1 = alpha * value;
+            oclComplex_t tmp2 = beta * C[j * ldc + i];
 
-            ref_C[j * ldc + i].val[0] = tmp1.val[0] + tmp2.val[0];
-            ref_C[j * ldc + i].val[1] = tmp1.val[1] + tmp2.val[1];
+            ref_C[j * ldc + i] = tmp1 + tmp2;
         }
     }
 
@@ -381,8 +363,7 @@ TEST(Cgemm, hermitA_ntransB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }
 
@@ -418,17 +399,15 @@ TEST(Cgemm, ntransA_hermitB_3x3)
 
             for (int l = 0; l < k; l++)
             {
-                oclComplex_t tmp = cmul(A[l * lda + i],{ B[l * ldb + j].val[0], -1.f * B[l * ldb + j].val[1] });
+                oclComplex_t tmp = A[l * lda + i] * std::conj(B[l * ldb + j]);
 
-                value.val[0] += tmp.val[0];
-                value.val[1] += tmp.val[1];
+                value += tmp;
             }
 
-            oclComplex_t tmp1 = cmul(alpha, value);
-            oclComplex_t tmp2 = cmul(beta, C[j * ldc + i]);
+            oclComplex_t tmp1 = alpha * value;
+            oclComplex_t tmp2 = beta * C[j * ldc + i];
 
-            ref_C[j * ldc + i].val[0] = tmp1.val[0] + tmp2.val[0];
-            ref_C[j * ldc + i].val[1] = tmp1.val[1] + tmp2.val[1];
+            ref_C[j * ldc + i] = tmp1 + tmp2;
         }
     }
 
@@ -447,7 +426,6 @@ TEST(Cgemm, ntransA_hermitB_3x3)
     for (int i = 0; i < m; i++)
         for (int j = 0; j < ldc; j++)
         {
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[0], ref_C[i * ldc + j].val[0]);
-            EXPECT_FLOAT_EQ(C[i * ldc + j].val[1], ref_C[i * ldc + j].val[1]);
+            EXPECT_COMPLEX_EQ(C[i * ldc + j], ref_C[i * ldc + j]);
         }
 }

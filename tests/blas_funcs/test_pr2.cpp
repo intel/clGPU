@@ -32,7 +32,7 @@ struct func_traits<iclgpu::functions::Chpr2>
     static void reference(iclgpu::functions::Chpr2::params& params)
     {
         const auto alpha = static_cast<std::complex<double>>(params.alpha);
-        const bool ltriangle = params.uplo == 1;
+        const bool ltriangle = params.uplo == ICLBLAS_FILL_MODE_LOWER;
         if (ltriangle)
         {
             int packed_counter = 0;
@@ -97,11 +97,11 @@ INSTANTIATE_TEST_CASE_P(
     C256,
     test_Chpr2,
     Combine(
-        Values(""),
-        Values(0, 1),
-        Values(2 << 7),
-        Values(1, 3),
-        Values(1, 3)
+        Values(""),                                                 // impl_name
+        Values(ICLBLAS_FILL_MODE_UPPER, ICLBLAS_FILL_MODE_LOWER),   // uplo
+        Values(2 << 7),                                             // num
+        Values(1, 3),                                               // incx
+        Values(1, 3)                                                // incy
     ),
     testing::internal::DefaultParamName<test_Chpr2::ParamType>
 );
@@ -114,7 +114,7 @@ struct func_traits<iclgpu::functions::Sspr2>
     static void reference(iclgpu::functions::Sspr2::params& params)
     {
         const auto alpha = static_cast<double>(params.alpha);
-        const bool ltriangle = params.uplo == 1;
+        const bool ltriangle = params.uplo == ICLBLAS_FILL_MODE_LOWER;
 
         if (ltriangle)
         {
@@ -178,11 +178,11 @@ INSTANTIATE_TEST_CASE_P(
     S256,
     test_Sspr2,
     Combine(
-        Values(""),
-        Values(0, 1),
-        Values(2 << 7),
-        Values(1, 3),
-        Values(1, 3)
+        Values(""),                                                 // impl_name
+        Values(ICLBLAS_FILL_MODE_UPPER, ICLBLAS_FILL_MODE_LOWER),   // uplo
+        Values(2 << 7),                                             // num
+        Values(1, 3),                                               // incx
+        Values(1, 3)                                                // incy
     ),
     testing::internal::DefaultParamName<test_Sspr2::ParamType>
 );

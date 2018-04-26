@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Ctrmm, 3x3_Left_Upper_N_NonUnit) {
     const auto side = ICLBLAS_SIDE_LEFT;
@@ -55,11 +56,7 @@ TEST(Ctrmm, 3x3_Left_Upper_N_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Left_Upper_N_Unit) {
@@ -102,11 +99,7 @@ TEST(Ctrmm, 3x3_Left_Upper_N_Unit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Left_Lower_N_Unit) {
@@ -149,11 +142,7 @@ TEST(Ctrmm, 3x3_Left_Lower_N_Unit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Left_Upper_T_NonUnit) {
@@ -196,11 +185,7 @@ TEST(Ctrmm, 3x3_Left_Upper_T_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Left_Lower_T_NonUnit) {
@@ -243,11 +228,7 @@ TEST(Ctrmm, 3x3_Left_Lower_T_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Right_Upper_N_NonUnit) {
@@ -290,11 +271,7 @@ TEST(Ctrmm, 3x3_Right_Upper_N_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Right_Upper_T_NonUnit) {
@@ -337,11 +314,7 @@ TEST(Ctrmm, 3x3_Right_Upper_T_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }
 
 TEST(Ctrmm, 3x3_Right_Lower_T_NonUnit) {
@@ -384,9 +357,5 @@ TEST(Ctrmm, 3x3_Right_Lower_T_NonUnit) {
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < 9; i++)
-    {
-        EXPECT_FLOAT_EQ(expected[i].val[0], c[i].val[0]);
-        EXPECT_FLOAT_EQ(expected[i].val[1], c[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, expected, c);
 }

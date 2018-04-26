@@ -13,25 +13,27 @@
  * limitations under the License.
  */
 
-__kernel void Chpr_naive(int uplo, int n, float alpha, __global complex_t* x, int incx, __global complex_t* a)
+#define ICLBLAS_FILL_MODE_LOWER (1)
+
+__kernel void Chpr_naive(int uplo, uint n, float alpha, __global complex_t* x, uint incx, __global complex_t* a)
 {
-    bool ltriangle = uplo == 1;
+    bool ltriangle = uplo == ICLBLAS_FILL_MODE_LOWER;
 
     if (ltriangle) {
-        for (int i=0, k=0; i<n; i++) {
-            a[k] += cmulf(cmul(x[i*incx], conjg(x[i*incx])), alpha);
+        for (uint i=0, k=0; i<n; i++) {
+            a[k] = cfmaf(cmul(x[i*incx], conjg(x[i*incx])), alpha, a[k]);
             a[k].y = 0.f;
             k++;
-            for (int j=i+1; j<n; j++, k++) {
-                a[k] += cmulf(cmul(x[j*incx], conjg(x[i*incx])), alpha);
+            for (uint j=i+1; j<n; j++, k++) {
+                a[k] = cfmaf(cmul(x[j*incx], conjg(x[i*incx])), alpha, a[k]);
             }
         }
     } else {
-        for (int i=0, k=0; i<n; i++) {
-            for (int j=0; j<i; j++, k++) {
-                a[k] += cmulf(cmul(x[j*incx], conjg(x[i*incx])), alpha);
+        for (uint i=0, k=0; i<n; i++) {
+            for (uint j=0; j<i; j++, k++) {
+                a[k] = cfmaf(cmul(x[j*incx], conjg(x[i*incx])), alpha, a[k]);
             }
-            a[k] += cmulf(cmul(x[i*incx], conjg(x[i*incx])), alpha);
+            a[k] = cfmaf(cmul(x[i*incx], conjg(x[i*incx])), alpha, a[k]);
             a[k].y = 0.f;
             k++;
         }

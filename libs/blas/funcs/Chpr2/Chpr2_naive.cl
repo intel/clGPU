@@ -13,24 +13,26 @@
  * limitations under the License.
  */
 
-__kernel void Chpr2_naive(int uplo, int n, complex_t alpha, __global complex_t* x, int incx, __global complex_t* y, int incy, __global complex_t* a)
+#define ICLBLAS_FILL_MODE_LOWER (1)
+
+__kernel void Chpr2_naive(int uplo, uint n, complex_t alpha, __global complex_t* x, uint incx, __global complex_t* y, uint incy, __global complex_t* a)
 {
-    bool ltriangle = uplo == 1;
+    const bool ltriangle = uplo == ICLBLAS_FILL_MODE_LOWER;
 
     if (ltriangle) {
-        for (int i=0, k=0; i<n; i++) {
+        for (uint i=0, k=0; i<n; i++) {
             a[k] += cmul(alpha, cmul(x[i*incx], conjg(y[i*incy])));
             a[k] += cmul(conjg(alpha), cmul(y[i*incy], conjg(x[i*incx])));
             a[k].y = 0.f;
             k++;
-            for (int j=i+1; j<n; j++, k++) {
+            for (uint j=i+1; j<n; j++, k++) {
                 a[k] += cmul(alpha, cmul(x[j*incx], conjg(y[i*incy])));
                 a[k] += cmul(conjg(alpha), cmul(y[j*incy], conjg(x[i*incx])));
             }
         }
     } else {
-        for (int i=0, k=0; i<n; i++) {
-            for (int j=0; j<i; j++, k++) {
+        for (uint i=0, k=0; i<n; i++) {
+            for (uint j=0; j<i; j++, k++) {
                 a[k] += cmul(alpha, cmul(x[j*incx], conjg(y[i*incy])));
                 a[k] += cmul(conjg(alpha), cmul(y[j*incy], conjg(x[i*incx])));
             }

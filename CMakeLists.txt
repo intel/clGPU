@@ -1,11 +1,11 @@
 # Copyright (c) 2017-2018 Intel Corporation
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -214,7 +214,7 @@ if(NOT PYTHONINTERP_FOUND)
   message(WARNING "[iclGPU] Project requires Python interpreter to build (with python loader). CMake could not detect it correctly.
       If you have installed this interpreter, please disregard this warning or specify PYTHON_EXECUTABLE in CMake command-line."
     )
-endif() 
+endif()
 
 # ================================================ Outputs =============================================
 
@@ -502,4 +502,3 @@ link_directories(
 add_subdirectory(core)
 add_subdirectory(libs)
 add_subdirectory(tests)
-

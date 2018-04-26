@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,13 +36,9 @@ private:
 
 namespace iclblas {
 
-inline iclgpu::complex_t complex_cast(const oclComplex_t& a) { return { a.val[0], a.val[1] }; }
-inline oclComplex_t complex_cast(const iclgpu::complex_t& a) { return{ {a.real(), a.imag()} }; }
-
-inline iclgpu::complex_t* complex_cast(oclComplex_t* a) { return reinterpret_cast<iclgpu::complex_t*>(a); }
-inline const iclgpu::complex_t* complex_cast(const oclComplex_t* a) { return reinterpret_cast<const iclgpu::complex_t*>(a); }
-inline oclComplex_t* complex_cast(iclgpu::complex_t* a) { return reinterpret_cast<oclComplex_t*>(a); }
-inline const oclComplex_t* complex_cast(const iclgpu::complex_t* a) { return reinterpret_cast<const oclComplex_t*>(a); }
+inline iclgpu::complex_t complex_cast(const oclComplex_t& a) { return a; }
+inline iclgpu::complex_t* complex_cast(oclComplex_t* a) { return a; }
+inline const iclgpu::complex_t* complex_cast(const oclComplex_t* a) { return a; }
 
 // internal error handling is based on exceptions
 // The following function translate exceptions to C API error codes.

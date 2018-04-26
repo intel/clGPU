@@ -21,5 +21,5 @@ __kernel void Crot_noinc(__global complex_t* x, __global complex_t* y, float c, 
     complex_t y_this = y[gid];
 
     x[gid] = cfmaf(x_this, c, cmul(s, y_this));
-    y[gid] = cfmaf(y_this, c, cmul(cneg(s), x_this));
+    y[gid] = cfmaf(y_this, c, cmul(cneg(conjg(s)), x_this));
 }

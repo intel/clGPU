@@ -24,5 +24,5 @@ __kernel void Crot_async(__global complex_t* x, int incx, __global complex_t* y,
     complex_t y_this = y[idy];
 
     x[idx] = cfmaf(x_this, c, cmul(s, y_this));
-    y[idy] = cfmaf(y_this, c, cmul(cneg(s), x_this));
+    y[idy] = cfmaf(y_this, c, cmul(cneg(conjg(s)), x_this));
 }

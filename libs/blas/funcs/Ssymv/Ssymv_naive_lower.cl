@@ -13,43 +13,24 @@
  * limitations under the License.
  */
 
-__kernel void Ssymv_naive_lower(int n, float alpha, __global float* A, int lda, __global float* x, int incx, float beta, __global float* y, int incy, __global float* tempL, __global float* tempR)
+ #define MAT_ACCESS(A, col, row, n) A[col * n + row]
+
+__kernel void Ssymv_naive_lower(uint n, float alpha, __global float* A, uint lda, __global float* x, int incx, float beta, __global float* y, int incy)
 {
-    //----------------LEFT SIDE START--------------------
-   //alpha * A
-   for (int i=0; i<n; ++i)
-    {
-            for (int j=0; j<n; ++j)
-            {
-                if(i>=j) tempL[i*lda+j] = A[i*lda+j] * alpha;
-            }
+     for (uint i = 0; i < n; ++i)
+     {
+        float result = 0;
+        for (uint j = 0; j < n; ++j)
+        {
+            if (i >= j)
+               result = fma(MAT_ACCESS(A, j, i, lda), x[j * incx], result);
+            else
+               result = fma(MAT_ACCESS(A, i, j, lda), x[j * incx], result);
+        }
+
+        if(beta != 0)
+            y[i * incy] = fma(alpha, result, beta * y[i * incy]);
+        else
+            y[i * incy] = alpha * result;
      }
-
-    //alpha * A * x
-    for (int i=0; i<n; ++i)
-       {
-            for (int j=0; j<n; ++j)
-           {
-                if(i>=j)  tempR[i] += tempL[i*lda+j] * x[j * incx];
-           }
-       }
-      for (int i=0; i<n; ++i)
-       {
-            tempL[i] = tempR[i];
-       }
-       //-----------------LEFT SIDE END---------------------
-
-       //---------------RIGHT SIDE START--------------------
-        for (int i=0; i<n; ++i)
-       {
-                tempR[i] = beta * y[i];
-       }
-       //-----------------RIGHT SIDE END------------------
-
-
-       //----------Result = Left Side + Right Side---------
-      for (int i=0; i<n; ++i)
-       {
-           y[i] = tempL[i] + tempR[i];
-       }
 }

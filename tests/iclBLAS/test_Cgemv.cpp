@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Cgemv, Naive_N_NonScalar_3x3)
 {
@@ -51,11 +52,7 @@ TEST(Cgemv, Naive_N_NonScalar_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < m*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_N_Scalar_3x3)
@@ -94,11 +91,7 @@ TEST(Cgemv, Naive_N_Scalar_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < n*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_T_NonScalar_3x3)
@@ -137,11 +130,7 @@ TEST(Cgemv, Naive_T_NonScalar_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < n*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_T_Scalar_3x3)
@@ -180,11 +169,7 @@ TEST(Cgemv, Naive_T_Scalar_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < n*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_H_Scalar_3x3)
@@ -223,11 +208,7 @@ TEST(Cgemv, Naive_H_Scalar_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < n*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_N_Scalar_Inc_3x3)
@@ -266,11 +247,7 @@ TEST(Cgemv, Naive_N_Scalar_Inc_3x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < m*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }
 
 TEST(Cgemv, Naive_N_NonScalar_2x3)
@@ -309,9 +286,5 @@ TEST(Cgemv, Naive_N_NonScalar_2x3)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < m*incy; ++i)
-    {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], y[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], y[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ex_result, y);
 }

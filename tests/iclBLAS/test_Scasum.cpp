@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +25,9 @@ TEST(Scasum, big_test) {
 
     for (int i = 0; i < n; ++i)
     {
-        x[i].val[0] = 1.f * i / n / n;
-        x[i].val[1] = 1.f * i / n / n;
-        
-        ex_result += fabs(x[i].val[0]) + fabs(x[i].val[1]);
+        x[i] = { 1.f * i / n / n, 1.f * i / n / n };
+
+        ex_result += fabs(x[i].real()) + fabs(x[i].imag());
     }
 
     iclblasHandle_t handle;
@@ -54,13 +53,12 @@ TEST(Scasum, opt_small_work) {
 
     for (int i = 0; i < n * incx; ++i)
     {
-        x[i].val[0] = 1.f * i / n / n;
-        x[i].val[1] = 1.f * i / n / n;
+        x[i] = { 1.f * i / n / n, 1.f * i / n / n };
     }
 
     for (int i = 0; i < n; ++i)
     {
-        ex_result += fabs(x[i * incx].val[0]) + fabs(x[i * incx].val[1]);
+        ex_result += fabs(x[i * incx].real()) + fabs(x[i * incx].imag());
     }
 
 
@@ -87,13 +85,12 @@ TEST(Scasum, opt_small_work_v2) {
 
     for (int i = 0; i < n * incx; ++i)
     {
-        x[i].val[0] = 1.f * i / n / n;
-        x[i].val[1] = 1.f * i / n / n;
+        x[i] = { 1.f * i / n / n, 1.f * i / n / n };
     }
 
     for (int i = 0; i < n; ++i)
     {
-        ex_result += fabs(x[i * incx].val[0]) + fabs(x[i * incx].val[1]);
+        ex_result += fabs(x[i * incx].real()) + fabs(x[i * incx].imag());
     }
 
     iclblasHandle_t handle;
@@ -119,13 +116,12 @@ TEST(Scasum, 2stage_v2) {
 
     for (int i = 0; i < n * incx; ++i)
     {
-        x[i].val[0] = 1.f * i / n / n;
-        x[i].val[1] = 1.f * i / n / n;
+        x[i] = { 1.f * i / n / n, 1.f * i / n / n };
     }
 
     for (int i = 0; i < n; ++i)
     {
-        ex_result += fabs(x[i * incx].val[0]) + fabs(x[i * incx].val[1]);
+        ex_result += fabs(x[i * incx].real()) + fabs(x[i * incx].imag());
     }
 
     iclblasHandle_t handle;

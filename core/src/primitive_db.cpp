@@ -16,22 +16,14 @@
 
 namespace iclgpu
 {
-DEFINE_CLASS_ID(primitive_db)
-
-primitive_db::primitive_db(const std::shared_ptr<iclgpu::context>& ctx)
-    : element(ctx)
-    , _db({
-        #include "ocl_kernels.inc"
-    })
-{}
 
 std::string primitive_db::get(const std::string& id)
 {
     return _db.at(id);
 }
 
-void primitive_db::insert(std::initializer_list<std::pair<std::string, std::string>> ilist)
+void primitive_db::insert(const value_type& value)
 {
-    _db.insert(ilist.begin(), ilist.end());
+    _db[value.first] = value.second;
 }
 }

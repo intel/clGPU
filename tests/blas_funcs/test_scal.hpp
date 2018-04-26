@@ -19,6 +19,27 @@
 
 namespace iclgpu { namespace tests {
 
+template<
+    typename data_type,
+    typename alpha_type,
+    typename acc_type = accumulator_type_t<data_type>,
+    typename acc_alpha_type = accumulator_type_t<alpha_type>>
+void cpu_scal(
+    const int n,
+    const alpha_type alpha,
+    data_type* x,
+    const int incx)
+{
+    auto acc_alpha = static_cast<acc_alpha_type>(alpha);
+    for (int i = 0; i < n; ++i)
+    {
+        auto this_x = static_cast<acc_type>(x[i * incx]);
+        this_x *= acc_alpha;
+        x[i * incx] = static_cast<data_type>(this_x);
+    }
+}
+
+
 template<class Func>
 struct test_scal : test_base_V<Func>
 {

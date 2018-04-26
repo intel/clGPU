@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
 #include <complex>
+#include <gtest_utils.hpp>
 
 TEST(Cscal, naive_5x1)
 {
@@ -28,7 +29,7 @@ TEST(Cscal, naive_5x1)
         { 3.f * 1.5f - 3.f * 2.f,  3.f *  2.f + 3.f * 1.5f },
         { 4.f * 1.5f - 4.f * 2.f,  4.f *  2.f + 4.f * 1.5f },
         { 5.f * 1.5f - 5.f * 2.f,  5.f *  2.f + 5.f * 1.5f } };
-        
+
     iclblasHandle_t handle;
     iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
     status = iclblasCreate(&handle);
@@ -39,11 +40,7 @@ TEST(Cscal, naive_5x1)
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
-    for (int i = 0; i < num*incx; ++i)
-    {
-        EXPECT_FLOAT_EQ(ref_x[i].val[0], x[i].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i].val[1], x[i].val[1]);
-    }
+    EXPECT_ARRAYS_EQ(oclComplex_t, ref_x, x);
 }
 
 TEST(Cscal, incx_2)
@@ -80,8 +77,7 @@ TEST(Cscal, incx_2)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].real(), x[i * incx].real());
-        EXPECT_FLOAT_EQ(ref_x[i * incx].imag(), x[i * incx].imag());
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -119,8 +115,7 @@ TEST(Cscal, noinc)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].real(), x[i * incx].real());
-        EXPECT_FLOAT_EQ(ref_x[i * incx].imag(), x[i * incx].imag());
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -158,7 +153,6 @@ TEST(Cscal, optim)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].real(), x[i * incx].real());
-        EXPECT_FLOAT_EQ(ref_x[i * incx].imag(), x[i * incx].imag());
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }

@@ -23,26 +23,21 @@ namespace iclgpu { namespace tests {
 using ::testing::Combine;
 using ::testing::Values;
 
-template<>
-struct func_traits<iclgpu::functions::Sscal>
+template<typename _data_type, typename _alpha_type, typename func_type>
+struct scal_traits
 {
-    using data_type = float;
-    using alpha_type = float;
+    using data_type = _data_type;
+    using alpha_type = _alpha_type;
 
-    static void reference(iclgpu::functions::Sscal::params& params)
+    static void reference(typename func_type::params& params)
     {
-        const auto alpha = static_cast<double>(params.alpha);
-        int index = 0;
-        for (int i = 0; i < params.n; i++)
-        {
-            auto this_x = static_cast<double>(params.x[index]);
-            this_x *= alpha;
-            params.x[index] = static_cast<float>(this_x);
-
-            index += params.incx;
-        }
+        cpu_scal<data_type, alpha_type>(params.n, params.alpha, params.x, params.incx);
     }
 };
+
+template<>
+struct func_traits<iclgpu::functions::Sscal> : scal_traits<float, float, iclgpu::functions::Sscal>
+{};
 
 using test_Sscal = test_scal<iclgpu::functions::Sscal>;
 
@@ -59,7 +54,7 @@ INSTANTIATE_TEST_CASE_P(
     S5K_13,
     test_Sscal,
     Combine(
-        Values("naive"),
+        Values("naive", "packed"),
         Values(5 << 10, (5 << 10) + 13),
         Values(1, 3)
     ),
@@ -70,7 +65,7 @@ INSTANTIATE_TEST_CASE_P(
     S5K_13_noinc,
     test_Sscal,
     Combine(
-        Values("noinc"),
+        Values("noinc", "packed_noinc", "block_read"),
         Values(5 << 10, (5 << 10) + 13),
         Values(1)
     ),
@@ -78,25 +73,8 @@ INSTANTIATE_TEST_CASE_P(
 );
 
 template<>
-struct func_traits<iclgpu::functions::Cscal>
-{
-    using data_type = iclgpu::complex_t;
-    using alpha_type = iclgpu::complex_t;
-
-    static void reference(iclgpu::functions::Cscal::params& params)
-    {
-        const auto alpha = static_cast<std::complex<double>>(params.alpha);
-        int index = 0;
-        for (int i = 0; i < params.n; i++)
-        {
-            auto this_x = static_cast<std::complex<double>>(params.x[index]);
-            this_x *= alpha;
-            params.x[index] = static_cast<iclgpu::complex_t>(this_x);
-
-            index += params.incx;
-        }
-    }
-};
+struct func_traits<iclgpu::functions::Cscal> : scal_traits<iclgpu::complex_t, iclgpu::complex_t, iclgpu::functions::Cscal>
+{};
 
 using test_Cscal = test_scal<iclgpu::functions::Cscal>;
 

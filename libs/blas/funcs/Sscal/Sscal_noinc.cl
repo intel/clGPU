@@ -15,6 +15,6 @@
 
 __kernel void Sscal_noinc(float alpha, __global float* x)
 {
-   int gid = get_global_id(0);
+   const uint gid = get_global_id(0);
    x[gid] *= alpha;
 }

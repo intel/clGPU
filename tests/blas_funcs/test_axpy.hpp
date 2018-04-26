@@ -18,6 +18,37 @@
 
 namespace iclgpu { namespace tests {
 
+template<typename data_type, typename acc_type = accumulator_type_t<data_type>>
+void cpu_axpy(
+    const int n,
+    const data_type alpha,
+    const data_type* x,
+    const int incx,
+    data_type* y,
+    const int incy)
+{
+    auto acc_alpha = static_cast<acc_type>(alpha);
+    auto x_ptr = x;
+    auto y_ptr = y;
+    if (incx < 0)
+    {
+        x_ptr -= incx * n;
+    }
+    if (incy < 0)
+    {
+        y_ptr -= incy * n;
+    }
+    for (int i = 0; i < n; ++i)
+    {
+        auto this_x = static_cast<acc_type>(*x_ptr);
+        auto this_y = static_cast<acc_type>(*y_ptr);
+        auto result = this_y + acc_alpha * this_x;
+        *y_ptr = static_cast<data_type>(result);
+        x_ptr += incx;
+        y_ptr += incy;
+    }
+}
+
 template<class Func>
 struct test_axpy : test_base_VV<Func>
 {

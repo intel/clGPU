@@ -23,13 +23,16 @@
 namespace iclgpu
 {
 
-DEFINE_CLASS_ID(ocl_engine)
-
 ocl_engine::ocl_engine(const std::shared_ptr<iclgpu::context>& ctx)
     : element(ctx)
     , _ocl_toolkit(new ocl_toolkit(this)) {}
 
 ocl_engine::~ocl_engine() = default;
+
+primitive_db* ocl_engine::get_primitive_db()
+{
+    return _ocl_toolkit->get_primitive_db();
+}
 
 std::shared_ptr<kernel_command> ocl_engine::get_kernel(const std::string& name, const std::string& module)
 {

@@ -25,7 +25,7 @@ __kernel void Isamax_naive(int n, __global float* x, int incx, __global int* res
         if(current > currentMax)
         {
             currentMax = current;
-            maxIndex = i * incx;
+            maxIndex = i;
         }
     }
 

@@ -18,6 +18,43 @@
 
 namespace iclgpu { namespace tests {
 
+template<typename data_type, bool conj = false, typename acc_type = accumulator_type_t<data_type>>
+void cpu_dot(
+    const int n,
+    const data_type* x,
+    const int incx,
+    const data_type* y,
+    const int incy,
+    data_type* result)
+{
+    auto product = acc_type(0);
+    auto x_ptr = x;
+    auto y_ptr = y;
+    if (incx < 0)
+    {
+        x_ptr -= incx * n;
+    }
+    if (incy < 0)
+    {
+        y_ptr -= incy * n;
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        auto this_x = static_cast<acc_type>(*x_ptr);
+        auto this_y = static_cast<acc_type>(*y_ptr);
+        if (conj)
+        {
+            this_x = blas_conj(this_x);
+        }
+        product += this_x * this_y;
+        x_ptr += incx;
+        y_ptr += incy;
+    }
+
+    *result = static_cast<data_type>(product);
+}
+
 template<class Func>
 struct test_dot : test_base_VV<Func>
 {

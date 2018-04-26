@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,11 +14,11 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 oclComplex_t cdiv(oclComplex_t a, oclComplex_t b)
 {
-    float divisor = b.val[0] * b.val[0] + b.val[1] * b.val[1];
-    return { (a.val[0] * b.val[0] + a.val[1] * b.val[1]) / divisor, (a.val[1] * b.val[0] - a.val[0] * b.val[1]) / divisor };
+    return a / b;
 }
 
 TEST(Ctbsv, 3x4_up_ntrans_ndiag_k1)
@@ -53,8 +53,7 @@ TEST(Ctbsv, 3x4_up_ntrans_ndiag_k1)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -90,8 +89,7 @@ TEST(Ctbsv, 3x4_low_ntrans_ndiag_k2)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -126,8 +124,7 @@ TEST(Ctbsv, 3x4_low_trans_diag)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -161,8 +158,7 @@ TEST(Ctbsv, 2x4_up_trans_ndiag_2incx_k1)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }
 
@@ -197,7 +193,6 @@ TEST(Ctbsv, 3x4_low_trans_hermit_diag)
 
     for (int i = 0; i < n; i++)
     {
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[0], x[i * incx].val[0]);
-        EXPECT_FLOAT_EQ(ref_x[i * incx].val[1], x[i * incx].val[1]);
+        EXPECT_COMPLEX_EQ(ref_x[i * incx], x[i * incx]);
     }
 }

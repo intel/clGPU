@@ -13,20 +13,26 @@
  * limitations under the License.
  */
 
-__kernel void Ssyr_naive(int uplo, int n, float alpha, __global float* x, int incx, __global float* a, int lda)
+#define ICLBLAS_FILL_MODE_LOWER (1)
+
+#define IDX(m, n, ld) ((n)*(ld) + (m))
+
+__kernel void Ssyr_naive(int uplo, uint n, float alpha, __global float* x, uint incx, __global float* a, uint lda)
 {
-    bool ltriangle = uplo == 1;
+    bool ltriangle = uplo == ICLBLAS_FILL_MODE_LOWER;
 
     if (ltriangle) {
-        for (int i=0; i<n; i++) {
-            for (int j=i; j<n; j++) {
-                a[i*lda + j] += alpha*x[i*incx]*x[j*incx];
+        for (uint col = 0; col < n; col++) {
+            float prod = alpha * x[col * incx];
+            for (uint row = col; row < n; row++) {
+                a[col * lda + row] += prod*x[row * incx];
             }
         }
     } else {
-        for (int i=0; i<n; i++) {
-            for (int j=0; j<=i; j++) {
-                a[i*lda + j] += alpha*x[i*incx]*x[j*incx];
+        for (uint col = 0; col < n; col++) {
+            float prod = alpha * x[col * incx];
+            for (uint row = 0; row <= col; row++) {
+                a[col * lda + row] += prod*x[row * incx];
             }
         }
     }

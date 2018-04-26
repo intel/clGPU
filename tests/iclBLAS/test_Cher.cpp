@@ -16,13 +16,35 @@
 #include <iclBLAS.h>
 #include <complex>
 
-#define ACCESS(a, m, n, lda) a[(n)*(lda) + (m)]
+#define IDX(m, n, ld) (n)*(ld) + (m)
 
 #define EXPECT_COMPLEX_EQ(expected, result) \
     EXPECT_FLOAT_EQ(expected.real(), result.real()); \
     EXPECT_FLOAT_EQ(expected.imag(), result.imag())
 
-TEST(Cher, naive_up_5x5_inc1) {
+std::vector<std::complex<float>> cpuCher_upper(const int n, const float alpha, const std::vector<std::complex<float>> x, const int incx, const std::vector<std::complex<float>> a, const int lda) {
+    auto result = a;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            result[IDX(j, i, lda)] += alpha * x[j*incx] * std::conj(x[i*incx]);
+        }
+        result[IDX(i, i, lda)].imag(0.f);
+    }
+    return result;
+}
+
+std::vector<std::complex<float>> cpuCher_lower(const int n, const float alpha, const std::vector<std::complex<float>> x, const int incx, const std::vector<std::complex<float>> a, const int lda) {
+    auto result = a;
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            result[IDX(j, i, lda)] += alpha * x[j*incx] * std::conj(x[i*incx]);
+        }
+        result[IDX(i, i, lda)].imag(0.f);
+    }
+    return result;
+}
+
+TEST(Cher, 5x5_up_incx1) {
     const auto uplo = ICLBLAS_FILL_MODE_UPPER;
     const int n = 5;
     const int incx = 1;
@@ -40,9 +62,9 @@ TEST(Cher, naive_up_5x5_inc1) {
     for (int i = 0; i < n*lda; i++) expected[i] = a[i];
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
-            ACCESS(expected, i, j, lda) += alpha * x[i*incx] * std::conj(x[j*incx]);
+            expected[IDX(i, j, lda)] += alpha * x[i*incx] * std::conj(x[j*incx]);
         }
-        ACCESS(expected, i, i, lda).imag(0.f);
+        expected[IDX(i, i, lda)].imag(0.f);
     }
 
     iclblasHandle_t handle;
@@ -61,7 +83,7 @@ TEST(Cher, naive_up_5x5_inc1) {
     }
 }
 
-TEST(Cher, naive_up_5x4_inc1) {
+TEST(Cher, 5x4_up_incx1) {
     const auto uplo = ICLBLAS_FILL_MODE_UPPER;
     const int n = 4;
     const int incx = 1;
@@ -78,9 +100,9 @@ TEST(Cher, naive_up_5x4_inc1) {
     for (int i = 0; i < n*lda; i++) expected[i] = a[i];
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
-            ACCESS(expected, i, j, lda) += alpha * x[i*incx] * std::conj(x[j*incx]);
+            expected[IDX(i, j, lda)] += alpha * x[i*incx] * std::conj(x[j*incx]);
         }
-        ACCESS(expected, i, i, lda).imag(0.f);
+        expected[IDX(i, i, lda)].imag(0.f);
     }
 
     iclblasHandle_t handle;
@@ -99,7 +121,7 @@ TEST(Cher, naive_up_5x4_inc1) {
     }
 }
 
-TEST(Cher, naive_low_5x5_inc1) {
+TEST(Cher, 5x5_low_incx1) {
     const auto uplo = ICLBLAS_FILL_MODE_LOWER;
     const int n = 5;
     const int incx = 1;
@@ -117,9 +139,9 @@ TEST(Cher, naive_low_5x5_inc1) {
     for (int i = 0; i < n*lda; i++) expected[i] = a[i];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < i+1; j++) {
-            ACCESS(expected, i, j, lda) += alpha * x[i*incx] * std::conj(x[j*incx]);
+            expected[IDX(i, j, lda)] += alpha * x[i*incx] * std::conj(x[j*incx]);
         }
-        ACCESS(expected, i, i, lda).imag(0.f);
+        expected[IDX(i, i, lda)].imag(0.f);
     }
 
     iclblasHandle_t handle;
@@ -138,7 +160,7 @@ TEST(Cher, naive_low_5x5_inc1) {
     }
 }
 
-TEST(Cher, naive_low_3x3_inc2) {
+TEST(Cher, 3x3_low_incx2) {
     const auto uplo = ICLBLAS_FILL_MODE_LOWER;
     const int n = 3;
     const int incx = 2;
@@ -154,9 +176,9 @@ TEST(Cher, naive_low_3x3_inc2) {
     for (int i = 0; i < n*lda; i++) expected[i] = a[i];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < i + 1; j++) {
-            ACCESS(expected, i, j, lda) += alpha * x[i*incx] * std::conj(x[j*incx]);
+            expected[IDX(i, j, lda)] += alpha * x[i*incx] * std::conj(x[j*incx]);
         }
-        ACCESS(expected, i, i, lda).imag(0.f);
+        expected[IDX(i, i, lda)].imag(0.f);
     }
 
     iclblasHandle_t handle;
@@ -165,6 +187,278 @@ TEST(Cher, naive_low_3x3_inc2) {
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
 
     status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x), incx, reinterpret_cast<oclComplex_t*>(a), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 16x16_up_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 16;
+    const int incx = 2;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 16x16_up_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 16;
+    const int incx = 1;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 16x16_low_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 7;
+    const int incx = 2;
+    const int lda = 8;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 16x16_low_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 16;
+    const int incx = 1;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 35x35_up_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 35;
+    const int incx = 2;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 35x35_up_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_UPPER;
+    const int n = 35;
+    const int incx = 1;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_upper(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 35x35_low_incx2) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 35;
+    const int incx = 2;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+    status = iclblasDestroy(handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    for (int i = 0; i < n*lda; i++)
+    {
+        EXPECT_COMPLEX_EQ(expected[i], a[i]);
+    }
+}
+
+TEST(Cher, 35x35_low_incx1) {
+    const auto uplo = ICLBLAS_FILL_MODE_LOWER;
+    const int n = 35;
+    const int incx = 1;
+    const int lda = n;
+
+    float alpha = -0.1f;
+    std::vector<std::complex<float>> x(n*incx);
+    for (int i = 0; i < n; i++) {
+        x[i*incx] = { 1.f * i, 1.f * i + 1.f };
+    }
+    std::vector<std::complex<float>> a(n*lda);
+    for (int i = 0; i < n*lda; i++) {
+        a[i] = { 1.f * i, 1.f * i + 1.f };
+    }
+
+    auto expected = cpuCher_lower(n, alpha, x, incx, a, lda);
+
+    iclblasHandle_t handle;
+    iclblasStatus_t status = ICLBLAS_STATUS_SUCCESS;
+    status = iclblasCreate(&handle);
+    ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
+
+    status = iclblasCher(handle, uplo, n, &alpha, reinterpret_cast<oclComplex_t*>(x.data()), incx, reinterpret_cast<oclComplex_t*>(a.data()), lda);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);
     status = iclblasDestroy(handle);
     ASSERT_EQ(status, ICLBLAS_STATUS_SUCCESS);

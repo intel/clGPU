@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Intel Corporation
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //      http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <iclBLAS.h>
+#include <gtest_utils.hpp>
 
 TEST(Ctpsv, Naive_Upper_N_Unit)
 {
@@ -47,8 +48,7 @@ TEST(Ctpsv, Naive_Upper_N_Unit)
 
     for (int i = 0; i < n*incx; ++i)
     {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], x[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], x[i].val[1]);
+        EXPECT_COMPLEX_EQ(ex_result[i], x[i]);
     }
 }
 
@@ -84,8 +84,7 @@ TEST(Ctpsv, Naive_Lower_T_Unit)
 
     for (int i = 0; i < n; ++i)
     {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], x[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], x[i].val[1]);
+        EXPECT_COMPLEX_EQ(ex_result[i], x[i]);
     }
 }
 
@@ -121,7 +120,6 @@ TEST(Ctpsv, Naive_Lower_T_Unit_incx)
 
     for (int i = 0; i < n * incx; ++i)
     {
-        EXPECT_FLOAT_EQ(ex_result[i].val[0], x[i].val[0]);
-        EXPECT_FLOAT_EQ(ex_result[i].val[1], x[i].val[1]);
+        EXPECT_COMPLEX_EQ(ex_result[i], x[i]);
     }
 }

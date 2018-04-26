@@ -33,7 +33,7 @@ struct func_traits<iclgpu::functions::Chpr>
     static void reference(iclgpu::functions::Chpr::params& params)
     {
         const auto alpha = static_cast<double>(params.alpha);
-        const bool ltriangle = params.uplo == 1;
+        const bool ltriangle = params.uplo == ICLBLAS_FILL_MODE_LOWER;
 
         if (ltriangle)
         {
@@ -102,10 +102,10 @@ INSTANTIATE_TEST_CASE_P(
     C512,
     test_Chpr,
     Combine(
-        Values(""),
-        Values(0, 1),
-        Values(2 << 8),
-        Values(1, 3)
+        Values(""),                                                 // impl_name
+        Values(ICLBLAS_FILL_MODE_UPPER, ICLBLAS_FILL_MODE_LOWER),   // uplo
+        Values(2 << 8),                                             // num
+        Values(1, 3)                                                // incx
     ),
     testing::internal::DefaultParamName<test_Chpr::ParamType>
 );
@@ -119,7 +119,7 @@ struct func_traits<iclgpu::functions::Sspr>
     static void reference(iclgpu::functions::Sspr::params& params)
     {
         const auto alpha = static_cast<double>(params.alpha);
-        const bool ltriangle = params.uplo == 1;
+        const bool ltriangle = params.uplo == ICLBLAS_FILL_MODE_LOWER;
 
         if (ltriangle)
         {
@@ -174,10 +174,10 @@ INSTANTIATE_TEST_CASE_P(
     S512,
     test_Sspr,
     Combine(
-        Values(""),
-        Values(0, 1),
-        Values(2 << 8),
-        Values(1, 3)
+        Values(""),                                                 // impl_name
+        Values(ICLBLAS_FILL_MODE_UPPER, ICLBLAS_FILL_MODE_LOWER),   // uplo
+        Values(2 << 8),                                             // num
+        Values(1, 3)                                                // incx
     ),
     testing::internal::DefaultParamName<test_Sspr::ParamType>
 );

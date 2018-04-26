@@ -159,7 +159,7 @@ TEST(Crot, noinc)
     for (int i = 0; i < n; i++)
     {
         std::complex<float> _x = c * x[i * incx] + s * y[i * incy];
-        refy[i * incy] = -1.f * s * x[i * incx] + c * y[i * incy];
+        refy[i * incy] = c * y[i * incy] - std::conj(s) * x[i * incx];
         refx[i * incx] = _x;
     }
 
@@ -208,7 +208,7 @@ TEST(Crot, noincx)
     for (int i = 0; i < n; i++)
     {
         std::complex<float> _x = c * x[i * incx] + s * y[i * incy];
-        refy[i * incy] = -1.f * s * x[i * incx] + c * y[i * incy];
+        refy[i * incy] = c * y[i * incy] - std::conj(s) * x[i * incx];
         refx[i * incx] = _x;
     }
 
@@ -257,7 +257,7 @@ TEST(Crot, noincy)
     for (int i = 0; i < n; i++)
     {
         std::complex<float> _x = c * x[i * incx] + s * y[i * incy];
-        refy[i * incy] = -1.f * s * x[i * incx] + c * y[i * incy];
+        refy[i * incy] = c * y[i * incy] - std::conj(s) * x[i * incx];
         refx[i * incx] = _x;
     }
 
@@ -307,7 +307,7 @@ TEST(Crot, optim)
     for (int i = 0; i < n; i++)
     {
         std::complex<float> _x = c * x[i * incx] + s * y[i * incy];
-        refy[i * incy] = -1.f * s * x[i * incx] + c * y[i * incy];
+        refy[i * incy] = c * y[i * incy] - std::conj(s) * x[i * incx];
         refx[i * incx] = _x;
     }
 

@@ -13,9 +13,14 @@
  * limitations under the License.
  */
 
-__kernel void Sger_no_inc(float alpha, __global float* x, __global float* y, __global float* a, int lda)
+__kernel void Sger_no_inc(float alpha, __global float* x, __global float* y, __global float* a, uint lda)
 {
-    int ind_x = get_global_id(0);
-    int ind_y = get_global_id(1);
-    a[ind_y*lda + ind_x] += alpha * x[ind_x] * y[ind_y];
+    const uint ind_m = get_global_id(0);
+    const uint ind_n = get_global_id(1);
+
+    const uint index_a = ind_n*lda + ind_m;
+    float this_a = a[index_a];
+    float prod = x[ind_m] * y[ind_n];
+    this_a = mad(alpha, prod, this_a);
+    a[index_a] = this_a;
 }

@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-2018 Intel Corporation
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@
 # To add new kernel please add a .cl file to kernels directory
 # the database name will be the part of the file name up to first '.' character
 # the trailing characters are a tag to allow multiple primitive implementations
-"""Lexical analyzer for iclGPU functions.def file"""
+"""Lexical analyzer for iclGPU functions definitions file"""
 
 from shlex import shlex
 import sys
@@ -32,7 +32,7 @@ class ParseError(SyntaxError):
 
 
 class FunctionsDef:
-    """Parse functions.def file"""
+    """Parse functions definitions file"""
 
     def __init__(self, file, file_name=None):
         self.keywords = dict(
@@ -241,7 +241,7 @@ class FunctionsDef:
         return self.__next__()
 
 if __name__ == '__main__':
-    file_name = 'functions.def'
+    file_name = 'functions.fdef'
     if len(sys.argv) > 1:
         file_name = sys.argv[1]
     for item in FunctionsDef(open(file_name), file_name):

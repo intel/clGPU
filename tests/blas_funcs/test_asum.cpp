@@ -16,31 +16,28 @@
 #include "test_asum.hpp"
 
 #include <functions/Sasum.hpp>
+#include <functions/Scasum.hpp>
 
 namespace iclgpu { namespace tests {
 
 using ::testing::Combine;
 using ::testing::Values;
 
-template<>
-struct func_traits<iclgpu::functions::Sasum>
+template<typename _data_type, typename func_type>
+struct asum_traits
 {
-    using data_type = float;
-    using result_type = float;
+    using data_type = _data_type;
+    using result_type = absolute_type_t<data_type>;
 
-    static void reference(iclgpu::functions::Sasum::params& params)
+    static void reference(typename func_type::params& params)
     {
-        double result = 0.0;
-
-        for (int i = 0; i < params.n; i++)
-        {
-            const auto this_x = params.x[i * params.incx];
-            result += static_cast<double>(std::abs(this_x));
-        }
-
-        params.result[0] = static_cast<float>(result);
+        cpu_asum<data_type>(params.n, params.x, params.incx, params.result);
     }
 };
+
+template<>
+struct func_traits<iclgpu::functions::Sasum> : asum_traits<float, iclgpu::functions::Sasum>
+{};
 
 using test_Sasum = test_asum<iclgpu::functions::Sasum>;
 
@@ -81,6 +78,29 @@ INSTANTIATE_TEST_CASE_P(
         Values(1)
     ),
     testing::internal::DefaultParamName<test_Sasum::ParamType> // workaround for gTest + GCC -Wpedantic incompatibility
+);
+
+template<>
+struct func_traits<iclgpu::functions::Scasum> : asum_traits<iclgpu::complex_t, iclgpu::functions::Scasum>
+{};
+
+using test_Scasum = test_asum<iclgpu::functions::Scasum>;
+
+TEST_P(test_Scasum, basic)
+{
+    ASSERT_NO_FATAL_FAILURE(run_function<iclgpu::functions::Scasum>(params, impl_name));
+    EXPECT_FLOAT_EQ(result_ref, result);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    C2K,
+    test_Scasum,
+    Combine(
+        Values(""),
+        Values(2 << 10),
+        Values(1, 3)
+    ),
+    testing::internal::DefaultParamName<test_Scasum::ParamType> // workaround for gTest + GCC -Wpedantic incompatibility
 );
 
 }}
